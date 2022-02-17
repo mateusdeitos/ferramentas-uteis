@@ -104,7 +104,11 @@ const Shell: React.FC = ({ children }) => {
 
 					<Group position="apart" sx={{ width: '100%' }}>
 						<Link href="/">
-							<Text {...styles(colorScheme).header}>Ferramentas úteis</Text>
+							<MediaQuery smallerThan="md" styles={{
+								fontSize: theme.headings.sizes.h4.fontSize
+							}}>
+								<Text {...styles(colorScheme).header}>Ferramentas úteis</Text>
+							</MediaQuery>
 						</Link>
 						<ActionIcon
 							variant="filled"
