@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { AppShell, ColorSchemeProvider, Burger, Group, Header, MantineProvider, MediaQuery, Navbar, Text, useMantineTheme, ColorScheme, ActionIcon, useMantineColorScheme, MantineTheme, CSSObject, MantineThemeOverride } from '@mantine/core';
 import Link from 'next/link'
 import { useLocalStorageValue } from '@mantine/hooks';
+import { useBreakpoint } from '../hooks/useBreakpoint';
+import { useRouter } from 'next/router';
 
 export const PageWrapper: React.FC = ({ children }) => {
 	const [persistedTheme, setPersistedTheme] = useLocalStorageValue<ColorScheme>({ key: 'theme', defaultValue: 'light' });
@@ -35,26 +37,36 @@ export const styles = (colorScheme: ColorScheme) => ({
 		})
 	},
 	text: {
-		sx: (theme: MantineTheme) => ({
-			color: colorScheme === 'light' ? theme.colors.gray[9] : theme.colors.gray[0],
-			fontSize: theme.fontSizes.sm,
-			cursor: 'pointer',
-			":hover": {
-				color: theme.colors.blue[8]
-			},
-			transition: 'color 0.2s ease-in-out',
-		})
+		sx: (theme: MantineTheme, isActive = false) => {
+
+			let color = colorScheme === 'light' ? theme.colors.gray[9] : theme.colors.gray[0];
+			if (isActive) {
+				color = theme.colors.blue[8];
+			}
+			return {
+				color,
+				fontSize: theme.fontSizes.sm,
+				fontWeight: "bold",
+				cursor: 'pointer',
+				":hover": {
+					color: theme.colors.blue[8]
+				},
+				transition: 'color 0.2s ease-in-out',
+			}
+		}
 	},
 	header: {
-		sx: (theme: MantineTheme): CSSObject => ({
-			color: colorScheme === 'light' ? theme.colors.gray[9] : theme.colors.gray[0],
-			fontSize: theme.headings.sizes.h1.fontSize,
-			cursor: 'pointer',
-			":hover": {
-				color: theme.colors.blue[8]
-			},
-			transition: 'color 0.2s ease-in-out',
-		})
+		sx: (theme: MantineTheme): CSSObject => {
+			return {
+				color: colorScheme === 'light' ? theme.colors.gray[9] : theme.colors.gray[0],
+				fontSize: theme.headings.sizes.h1.fontSize,
+				cursor: 'pointer',
+				":hover": {
+					color: theme.colors.blue[8]
+				},
+				transition: 'color 0.2s ease-in-out',
+			}
+		}
 	}
 });
 
@@ -62,6 +74,8 @@ const Shell: React.FC = ({ children }) => {
 	const { toggleColorScheme, colorScheme } = useMantineColorScheme();
 	const [opened, setOpened] = useState(false);
 	const theme = useMantineTheme();
+	const { isMobile } = useBreakpoint();
+	const { asPath } = useRouter();
 
 	return <AppShell
 		{...styles(colorScheme).bg}
@@ -82,8 +96,10 @@ const Shell: React.FC = ({ children }) => {
 				width={{ sm: 150, lg: 200 }}
 				{...styles(colorScheme).bg}
 			>
-				<Link href="/emprestimo">
-					<Text {...styles(colorScheme).text}>Cálculo de empréstimo</Text>
+				<Link href="/juros">
+					<Text sx={{
+						...styles(colorScheme).text.sx(theme, asPath === '/juros'),
+					}}>Cálculo de juros</Text>
 				</Link>
 
 			</Navbar>
@@ -104,11 +120,11 @@ const Shell: React.FC = ({ children }) => {
 
 					<Group position="apart" sx={{ width: '100%' }}>
 						<Link href="/">
-							<MediaQuery smallerThan="md" styles={{
-								fontSize: theme.headings.sizes.h4.fontSize
-							}}>
-								<Text {...styles(colorScheme).header}>Ferramentas úteis</Text>
-							</MediaQuery>
+							<Text sx={{
+								...styles(colorScheme).header.sx(theme),
+								fontSize: theme.headings.sizes[isMobile ? "h4" : "h1"].fontSize,
+							}}
+							>Ferramentas úteis</Text>
 						</Link>
 						<ActionIcon
 							variant="filled"
