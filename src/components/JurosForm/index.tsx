@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useForm, FormProvider } from 'react-hook-form';
-import { Container, Group, Button, Divider, Space, Radio, useMantineColorScheme, useMantineTheme, Text, Accordion, Card } from '@mantine/core'
-import { ValorInputComponent } from "./ValorInput";
-import { SelectComponent } from "./Select";
+import { Container, Group, Button, ButtonProps, Divider, Space, Radio, useMantineColorScheme, useMantineTheme, Text, Accordion, Card } from '@mantine/core'
 import { RadioGroupComponent } from "./RadioGroup";
 import { styles } from "../PageWrapper";
 import { useHotkeys } from "@mantine/hooks";
 import { useBreakpoint } from "../../hooks/useBreakpoint";
-import { numeroBr } from "../../utils/formatters/numberFormat";
-import { calcularValorParcelas, calcularAmortizacaoParcelas, converterTaxaJuros, calcularMontanteFinal, calcularTaxaJuros, calcularAmortizacaoEmprestimo } from "../../services/juros";
+import { converterTaxaJuros } from "../../services/juros";
+import { MontanteFinalForm } from "./MontanteFinalForm";
+import { TaxaJurosForm } from "./TaxaJurosForm";
+import { AmortizacaoEmprestimoForm } from "./AmortizacaoEmprestimoForm";
 export interface IJurosForm {
 	periodo: number;
 	valorInicial: number;
@@ -21,7 +21,7 @@ export interface IJurosForm {
 	parcelasRestantes: number;
 }
 
-interface IResult {
+export interface IResult {
 	[key: string]: {
 		descricao: string;
 		valor: number | string;
@@ -35,92 +35,26 @@ export const JurosForm: React.FC = () => {
 	const [result, setResult] = useState<IResult | null>(null);
 	const theme = useMantineTheme();
 
-	useHotkeys([
-		['mod+Enter', () => handleCalculo()],
-	]);
-
 	const form = useForm<IJurosForm>({
 		defaultValues: {
 			tipoPeriodo: "mes",
 			periodo: 12,
 			modoCalculo: "montanteFinal",
-		}
+		},
 	});
-	const { getValues, watch, setFocus, setValue } = form;
+	const { watch, setFocus, setValue } = form;
 
 	const modoCalculo = watch("modoCalculo");
 	const tipoPeriodoSelecionado = watch("tipoPeriodo");
 	const taxaJuros = watch("taxaJuros");
 
-	const handleCalculo = () => {
-		const values = getValues();
-		let result = {} as IResult;
-		switch (modoCalculo) {
-			case "taxaJuros": {
-				const { taxaJurosCalculada } = calcularTaxaJuros(values);
-				result = {
-					montanteFinal: {
-						descricao: "Montante final",
-						valor: numeroBr(values.montanteFinal),
-					},
-					taxaJuros: {
-						descricao: "Taxa de juros",
-						valor: numeroBr(taxaJurosCalculada * 100) + "%" + (values.tipoPeriodo === "ano" ? " a.a" : " a.m"),
-					},
-				}
-				break;
-			}
-			case "montanteFinal": {
-				const { montanteFinalCalculado, valorParcelas, amortizacaoPorParcela } = calcularMontanteFinal(values);
-
-				result = {
-					montanteFinal: {
-						descricao: "Montante final",
-						valor: numeroBr(montanteFinalCalculado),
-					},
-					valorParcelas: {
-						descricao: "Valor por parcela",
-						valor: numeroBr(valorParcelas),
-					},
-					amortizacaoPorParcela: {
-						descricao: "Amortização por parcela",
-						valor: numeroBr(amortizacaoPorParcela),
-					},
-				};
-				break;
-			}
-			case "amortizacaoEmprestimo": {
-				const { amortizacaoPorParcela, valorParcelas } = calcularAmortizacaoEmprestimo(values);
-				result = {
-					valorParcelas: {
-						descricao: "Valor por parcela",
-						valor: numeroBr(valorParcelas),
-					},
-					amortizacaoPorParcela: {
-						descricao: "Amortização por parcela",
-						valor: numeroBr(amortizacaoPorParcela),
-					},
-				}
-				break;
-			}
-
-			default:
-				break;
-		}
-
-		setResult(result);
-	}
-
 	useEffect(() => {
 		if (!isMobile) {
 			setFocus("valorInicial");
 		}
-	}, [modoCalculo]);
 
-	useEffect(() => {
-		const subscription = watch((data) => setResult(null));
-		return () => subscription.unsubscribe();
-	}, [watch]);
+		setResult(null);
+	}, [modoCalculo]);
 
 	useEffect(() => {
 		if (!!taxaJuros) {
@@ -146,79 +80,11 @@ export const JurosForm: React.FC = () => {
 			<Space h="md" />
 			<Divider />
 			<Space h="md" />
-			<Group>
-				<ValorInputComponent
-					name="valorInicial"
-					label="Valor inicial"
-					hideControls
-				/>
-			</Group>
-			<Group>
-				<ValorInputComponent
-					name="periodo"
-					label="Período"
-					precision={0}
-				/>
-				<SelectComponent
-					name="tipoPeriodo"
-					label="Tipo de período"
-					data={[
-						{
-							value: "mes",
-							label: "Mês"
-						},
-						{
-							value: "ano",
-							label: "Ano"
-						}
-					]} />
-			</Group>
-			<Group>
-				{modoCalculo !== "taxaJuros" && (
-					<ValorInputComponent
-						name="taxaJuros"
-						label="Taxa de Juros (%)"
-						step={0.01}
-						precision={8}
-					/>
-				)}
-			</Group>
-			{modoCalculo === "taxaJuros" && (
-				<Group>
-					<ValorInputComponent
-						name="montanteFinal"
-						label="Montante final"
-						hideControls
-					/>
-				</Group>
-			)}
-			{modoCalculo === 'amortizacaoEmprestimo' && (
-				<>
-					<Group>
-						<ValorInputComponent
-							name="saldoDevedor"
-							label="Saldo devedor do empréstimo"
-							precision={2}
-						/>
-						<ValorInputComponent
-							name="valorAmortizar"
-							label="Valor a ser amortizado"
-							precision={2}
-						/>
-						<ValorInputComponent
-							name="parcelasRestantes"
-							label="Parcelas restantes"
-							precision={0}
-						/>
-					</Group>
-				</>
-			)}
-			<Space h="md" />
-			<Divider />
-			<Space h="md" />
-			<Group>
-				<Button type="button" onClick={handleCalculo}>Calcular{!isMobile ? " (Ctrl+Enter)" : ""}</Button>
-			</Group>
+
+			{modoCalculo === 'montanteFinal' && <MontanteFinalForm updateResult={result => setResult(result)} />}
+			{modoCalculo === 'taxaJuros' && <TaxaJurosForm updateResult={result => setResult(result)} />}
+			{modoCalculo === 'amortizacaoEmprestimo' && <AmortizacaoEmprestimoForm updateResult={result => setResult(result)} />}
+
 			<Space h="md" />
 
 			{!!result && (
@@ -242,4 +108,24 @@ export const JurosForm: React.FC = () => {
 
 		</Container>
 	</FormProvider>
+}
+
+export const JurosFormCalculateButton: React.FC<ButtonProps<'button'>> = ({ children, ...props }) => {
+	const { isMobile } = useBreakpoint();
+	const { onClick = () => { } } = props;
+
+	useHotkeys([
+		['mod+Enter', () => onClick({} as React.MouseEvent<HTMLButtonElement>)],
+	]);
+	return <>
+		<Space h="md" />
+		<Divider />
+		<Space h="md" />
+		<Group>
+			<Button {...props}>
+				Calcular{!isMobile ? " (Ctrl+Enter)" : ""}
+				{children}
+			</Button>
+		</Group>
+	</>
 }
