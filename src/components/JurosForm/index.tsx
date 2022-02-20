@@ -29,6 +29,10 @@ interface IResult {
 
 const calcularValorParcelas = (montante: number, periodo: number) => montante / periodo;
 const calcularAmortizacaoParcelas = (valorInicial: number, periodo: number) => valorInicial / periodo;
+const converterTaxaJuros = (taxaJuros: number, periodoDesejado: "mes" | "ano") => {
+	const expoente = periodoDesejado === "mes" ? 1 / 12 : 12;
+	return (Math.pow(1 + taxaJuros / 100, expoente) - 1) * 100;
+}
 
 export const JurosForm: React.FC = () => {
 	const { colorScheme } = useMantineColorScheme();
@@ -47,9 +51,11 @@ export const JurosForm: React.FC = () => {
 			modoCalculo: "montanteFinal",
 		}
 	});
-	const { getValues, watch, setFocus } = form;
+	const { getValues, watch, setFocus, setValue } = form;
 
 	const modoCalculo = watch("modoCalculo");
+	const tipoPeriodoSelecionado = watch("tipoPeriodo");
+	const taxaJuros = watch("taxaJuros");
 
 	const calcularMontanteFinal = ({
 		periodo,
@@ -138,7 +144,13 @@ export const JurosForm: React.FC = () => {
 	useEffect(() => {
 		const subscription = watch((data) => setResult(null));
 		return () => subscription.unsubscribe();
-	}, [watch])
+	}, [watch]);
+
+	useEffect(() => {
+		if (!!taxaJuros) {
+			setValue("taxaJuros", converterTaxaJuros(Number(taxaJuros), tipoPeriodoSelecionado));
+		}
+	}, [tipoPeriodoSelecionado])
 
 	return <FormProvider {...form}>
 		<Container sx={{ ...styles(colorScheme).bg.sx(theme), paddingBottom: "2rem" }}>
@@ -229,7 +241,7 @@ export const JurosForm: React.FC = () => {
 			<Divider />
 			<Space h="md" />
 			<Group>
-				<Button type="button" onClick={handleCalculo}>Calcular (Ctrl+Enter)</Button>
+				<Button type="button" onClick={handleCalculo}>Calcular{!isMobile ? "(Ctrl+Enter)" : ""}</Button>
 			</Group>
 			<Space h="md" />
 
