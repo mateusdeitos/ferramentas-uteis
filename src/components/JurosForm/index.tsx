@@ -29,9 +29,6 @@ interface IResult {
 
 const calcularValorParcelas = (montante: number, periodo: number) => montante / periodo;
 const calcularAmortizacaoParcelas = (valorInicial: number, periodo: number) => valorInicial / periodo;
-const getExpoenteCalculo = ({ tipoPeriodo, periodo }: Pick<IEmprestimoForm, "tipoPeriodo" | "periodo">) => {
-	return (tipoPeriodo === "ano" ? periodo : periodo / 12);
-};
 
 export const JurosForm: React.FC = () => {
 	const { colorScheme } = useMantineColorScheme();
@@ -84,11 +81,7 @@ export const JurosForm: React.FC = () => {
 		valorInicial,
 		montanteFinal,
 	}: Pick<IEmprestimoForm, "tipoPeriodo" | "periodo" | "valorInicial" | "montanteFinal">) => {
-		const expoente = getExpoenteCalculo({ tipoPeriodo, periodo });
-
-		const taxaJurosCalculada = (montanteFinal / valorInicial) ** (1 / expoente) - 1;
-		const valorParcelas = calcularValorParcelas(montanteFinal, periodo);
-		const amortizacaoPorParcela = calcularAmortizacaoParcelas(valorInicial, periodo);
+		const taxaJurosCalculada = (montanteFinal / valorInicial) ** (1 / periodo) - 1;
 		setResult({
 			montanteFinal: {
 				descricao: "Montante final",
@@ -98,21 +91,12 @@ export const JurosForm: React.FC = () => {
 				descricao: "Taxa de juros",
 				valor: numeroBr(taxaJurosCalculada * 100) + "%" + (tipoPeriodo === "ano" ? " a.a" : " a.m"),
 			},
-			valorParcelas: {
-				descricao: "Valor por período",
-				valor: numeroBr(valorParcelas),
-			},
-			amortizacaoPorParcela: {
-				descricao: "Amortização por parcela",
-				valor: numeroBr(amortizacaoPorParcela),
-			},
 		})
 	};
 
 	const calcularAmortizacaoEmprestimo = (props: IEmprestimoForm) => {
-		const { saldoDevedor, parcelasRestantes, valorAmortizar, taxaJuros } = props;
-		const expoente = getExpoenteCalculo({ ...props });
-		const montante = (saldoDevedor - valorAmortizar) * Math.pow(1 + taxaJuros / 100, expoente);
+		const { saldoDevedor, parcelasRestantes, valorAmortizar, taxaJuros, periodo } = props;
+		const montante = (saldoDevedor - valorAmortizar) * Math.pow(1 + taxaJuros / 100, periodo);
 		const valorParcelas = calcularValorParcelas(montante, parcelasRestantes);
 		const amortizacaoPorParcela = calcularAmortizacaoParcelas(saldoDevedor - valorAmortizar, parcelasRestantes);
 		setResult({
@@ -146,8 +130,15 @@ export const JurosForm: React.FC = () => {
 	}
 
 	useEffect(() => {
-		setFocus("valorInicial");
-	}, [modoCalculo])
+		if (!isMobile) {
+			setFocus("valorInicial");
+		}
+	}, [modoCalculo]);
+
+	useEffect(() => {
+		const subscription = watch((data) => setResult(null));
+		return () => subscription.unsubscribe();
+	}, [watch])
 
 	return <FormProvider {...form}>
 		<Container sx={{ ...styles(colorScheme).bg.sx(theme), paddingBottom: "2rem" }}>
