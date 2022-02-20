@@ -8,7 +8,8 @@ import { styles } from "../PageWrapper";
 import { useHotkeys } from "@mantine/hooks";
 import { useBreakpoint } from "../../hooks/useBreakpoint";
 import { numeroBr } from "../../utils/formatters/numberFormat";
-export interface IEmprestimoForm {
+import { calcularValorParcelas, calcularAmortizacaoParcelas, converterTaxaJuros, calcularMontanteFinal, calcularTaxaJuros, calcularAmortizacaoEmprestimo } from "../../services/juros";
+export interface IJurosForm {
 	periodo: number;
 	valorInicial: number;
 	taxaJuros: number;
@@ -27,12 +28,6 @@ interface IResult {
 	}
 }
 
-const calcularValorParcelas = (montante: number, periodo: number) => montante / periodo;
-const calcularAmortizacaoParcelas = (valorInicial: number, periodo: number) => valorInicial / periodo;
-const converterTaxaJuros = (taxaJuros: number, periodoDesejado: "mes" | "ano") => {
-	const expoente = periodoDesejado === "mes" ? 1 / 12 : 12;
-	return (Math.pow(1 + taxaJuros / 100, expoente) - 1) * 100;
-}
 
 export const JurosForm: React.FC = () => {
 	const { colorScheme } = useMantineColorScheme();
@@ -44,7 +39,7 @@ export const JurosForm: React.FC = () => {
 		['mod+Enter', () => handleCalculo()],
 	]);
 
-	const form = useForm<IEmprestimoForm>({
+	const form = useForm<IJurosForm>({
 		defaultValues: {
 			tipoPeriodo: "mes",
 			periodo: 12,
@@ -57,82 +52,63 @@ export const JurosForm: React.FC = () => {
 	const tipoPeriodoSelecionado = watch("tipoPeriodo");
 	const taxaJuros = watch("taxaJuros");
 
-	const calcularMontanteFinal = ({
-		periodo,
-		valorInicial,
-		taxaJuros,
-	}: Pick<IEmprestimoForm, "periodo" | "valorInicial" | "taxaJuros">) => {
-		const montanteFinalCalculado = valorInicial * Math.pow(1 + taxaJuros / 100, periodo);
-		const valorParcelas = calcularValorParcelas(montanteFinalCalculado, periodo);
-		const amortizacaoPorParcela = calcularAmortizacaoParcelas(valorInicial, periodo);
-		setResult({
-			montanteFinal: {
-				descricao: "Montante final",
-				valor: numeroBr(montanteFinalCalculado),
-			},
-			valorParcelas: {
-				descricao: "Valor por parcela",
-				valor: numeroBr(valorParcelas),
-			},
-			amortizacaoPorParcela: {
-				descricao: "Amortização por parcela",
-				valor: numeroBr(amortizacaoPorParcela),
-			},
-		})
-	};
-
-	const calcularTaxaJuros = ({
-		tipoPeriodo,
-		periodo,
-		valorInicial,
-		montanteFinal,
-	}: Pick<IEmprestimoForm, "tipoPeriodo" | "periodo" | "valorInicial" | "montanteFinal">) => {
-		const taxaJurosCalculada = (montanteFinal / valorInicial) ** (1 / periodo) - 1;
-		setResult({
-			montanteFinal: {
-				descricao: "Montante final",
-				valor: numeroBr(montanteFinal),
-			},
-			taxaJuros: {
-				descricao: "Taxa de juros",
-				valor: numeroBr(taxaJurosCalculada * 100) + "%" + (tipoPeriodo === "ano" ? " a.a" : " a.m"),
-			},
-		})
-	};
-
-	const calcularAmortizacaoEmprestimo = (props: IEmprestimoForm) => {
-		const { saldoDevedor, parcelasRestantes, valorAmortizar, taxaJuros, periodo } = props;
-		const montante = (saldoDevedor - valorAmortizar) * Math.pow(1 + taxaJuros / 100, periodo);
-		const valorParcelas = calcularValorParcelas(montante, parcelasRestantes);
-		const amortizacaoPorParcela = calcularAmortizacaoParcelas(saldoDevedor - valorAmortizar, parcelasRestantes);
-		setResult({
-			valorParcelas: {
-				descricao: "Valor por parcela",
-				valor: numeroBr(valorParcelas),
-			},
-			amortizacaoPorParcela: {
-				descricao: "Amortização por parcela",
-				valor: numeroBr(amortizacaoPorParcela),
-			},
-		})
-	}
-
 	const handleCalculo = () => {
 		const values = getValues();
+		let result = {} as IResult;
 		switch (modoCalculo) {
-			case "taxaJuros":
-				calcularTaxaJuros({ ...values });
+			case "taxaJuros": {
+				const { taxaJurosCalculada } = calcularTaxaJuros(values);
+				result = {
+					montanteFinal: {
+						descricao: "Montante final",
+						valor: numeroBr(values.montanteFinal),
+					},
+					taxaJuros: {
+						descricao: "Taxa de juros",
+						valor: numeroBr(taxaJurosCalculada * 100) + "%" + (values.tipoPeriodo === "ano" ? " a.a" : " a.m"),
+					},
+				}
 				break;
-			case "montanteFinal":
-				calcularMontanteFinal({ ...values });
+			}
+			case "montanteFinal": {
+				const { montanteFinalCalculado, valorParcelas, amortizacaoPorParcela } = calcularMontanteFinal(values);
+
+				result = {
+					montanteFinal: {
+						descricao: "Montante final",
+						valor: numeroBr(montanteFinalCalculado),
+					},
+					valorParcelas: {
+						descricao: "Valor por parcela",
+						valor: numeroBr(valorParcelas),
+					},
+					amortizacaoPorParcela: {
+						descricao: "Amortização por parcela",
+						valor: numeroBr(amortizacaoPorParcela),
+					},
+				};
 				break;
-			case "amortizacaoEmprestimo":
-				calcularAmortizacaoEmprestimo({ ...values });
+			}
+			case "amortizacaoEmprestimo": {
+				const { amortizacaoPorParcela, valorParcelas } = calcularAmortizacaoEmprestimo(values);
+				result = {
+					valorParcelas: {
+						descricao: "Valor por parcela",
+						valor: numeroBr(valorParcelas),
+					},
+					amortizacaoPorParcela: {
+						descricao: "Amortização por parcela",
+						valor: numeroBr(amortizacaoPorParcela),
+					},
+				}
 				break;
+			}
 
 			default:
 				break;
 		}
+
+		setResult(result);
 	}
 
 	useEffect(() => {
@@ -241,7 +217,7 @@ export const JurosForm: React.FC = () => {
 			<Divider />
 			<Space h="md" />
 			<Group>
-				<Button type="button" onClick={handleCalculo}>Calcular{!isMobile ? "(Ctrl+Enter)" : ""}</Button>
+				<Button type="button" onClick={handleCalculo}>Calcular{!isMobile ? " (Ctrl+Enter)" : ""}</Button>
 			</Group>
 			<Space h="md" />
 
