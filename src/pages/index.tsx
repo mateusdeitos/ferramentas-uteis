@@ -1,3 +1,4 @@
+import { Divider } from "@mantine/core";
 import { CardItem } from "../components/Home/CardItem";
 import { Section } from "../components/Home/Section";
 import { PageWrapper } from "../components/PageWrapper";
@@ -6,18 +7,21 @@ import { PageWrapper } from "../components/PageWrapper";
 export default function Home() {
 	return (
 		<PageWrapper>
-			{sections.map(section => {
-				return <Section key={section.title} title={section.title}>
-					{section.items.map(item => {
-						return <CardItem key={item.title} title={item.title} href={item.href} description={item.description} />
-					})}
-				</Section>
+			{appSections.map((section, index, self) => {
+				return <>
+					<Section key={section.title} title={section.title}>
+						{section.items.map(item => {
+							return <CardItem key={item.title} title={item.title} href={item.href} description={item.description} />
+						})}
+					</Section>
+					{index !== self.length - 1 && <Divider />}
+				</>
 			})}
 		</PageWrapper >
 	);
 }
 
-const sections = [
+export const appSections = [
 	{
 		title: "Financeiras 💰",
 		items: [
@@ -33,5 +37,15 @@ const sections = [
 			},
 		]
 	},
+	// {
+	// 	title: "Coding 🖥️",
+	// 	items: [
+	// 		{
+	// 			title: "Conversor JSON",
+	// 			description: "Converta JSON em diversos formatos",
+	// 			href: "/conversor-json"
+	// 		}
+	// 	]
+	// }
 ]
 

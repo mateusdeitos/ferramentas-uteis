@@ -1,62 +1,64 @@
-import { ActionIcon, Group, Radio, RadioGroup, Text } from "@mantine/core";
+import { Group } from "@mantine/core";
 import { FormProvider, useForm } from "react-hook-form";
-import { JurosForm } from "../../components/Juros";
-import { ValorInputComponent } from "../../components/ValorInput";
 import { PageWrapper } from "../../components/PageWrapper";
-import { RadioGroupComponent } from "../../components/RadioGroup";
-import { CalculateButton } from "../../components/CalculateButton";
-import { useState } from "react";
-import { IResult, ResultSection } from "../../components/ResultSection";
-import { converterTaxaJuros } from "../../services/juros";
-import { numeroBr } from "../../utils/formatters/numberFormat";
+import { ValorInputComponent } from "../../components/ValorInput";
+import { converterTaxaJuros } from "../../services/conversao-juros";
+import { ConversaoJurosTypes } from "../../types/conversao-juros";
 
 type FormData = {
-	juros: number;
-	periodo: "mes" | "ano";
+	juros: Record<ConversaoJurosTypes.TPeriodoTaxa, number>;
 }
 
+const periodoOptions: { periodo: ConversaoJurosTypes.TPeriodoTaxa, label: string, symbol: string }[] = [
+	{ periodo: 'dia', label: 'Diário', symbol: 'ao dia' },
+	{ periodo: 'mes', label: 'Mensal', symbol: "ao mês" },
+	{ periodo: 'semestre', label: 'Semestral', symbol: "ao semestre" },
+	{ periodo: 'ano', label: 'Anual', symbol: "ao ano" },
+]
 
 export default function ConversaoJuros() {
-	const form = useForm<FormData>({ defaultValues: { juros: 0, periodo: "mes" } });
-	const [result, setResult] = useState<IResult | null>(null);
-
-	const calcular = form.handleSubmit((values) => {
-		const { juros, periodo } = values;
-		const jurosConvertido = converterTaxaJuros(juros, periodo === 'mes' ? 'ano' : 'mes');
-		setResult({
+	const form = useForm<FormData>({
+		defaultValues: {
 			juros: {
-				descricao: `Taxa de juros resultante ${periodo === 'mes' ? 'anual' : 'mensal'}`,
-				valor: numeroBr(jurosConvertido) + '%',
-			},
-		});
+				dia: 0,
+				mes: 0,
+				ano: 0,
+				semestre: 0,
+			}
+		}
 	});
+
+	const updateValues = (periodoAtual: ConversaoJurosTypes.TPeriodoTaxa) => {
+		const value = form.getValues().juros[periodoAtual];
+		if (!value) return;
+
+		periodoOptions
+			.filter((option) => option.periodo !== periodoAtual)
+			.forEach(({ periodo }) => {
+				const conversao = converterTaxaJuros(value, periodoAtual);
+				form.setValue(`juros.${periodo}`, conversao[periodo])
+			});
+
+	}
 
 	return <PageWrapper>
 		<FormProvider {...form}>
-			<Group>
-				<ValorInputComponent
-					name="juros"
-					label="Taxa de juros"
-					hideControls
-					rules={{
-						required: "A taxa de juros é obrigatório",
-						min: {
-							value: 0.01,
-							message: "A taxa de juros deve ser maior que 0",
-						}
-					}}
-				/>
-				<RadioGroupComponent name="periodo" label="Tipo de período">
-					<Radio value="mes">Mensal</Radio>
-					<Radio value="ano">Anual</Radio>
-				</RadioGroupComponent>
-			</Group>
-
-			<CalculateButton onClick={() => calcular()} />
-
-			{!!result && <ResultSection result={result} />}
+			{periodoOptions.map(({ periodo, label }) => (
+				<Group sx={{ marginBottom: 16 }}>
+					<ValorInputComponent
+						name={`juros.${periodo}`}
+						label={`Taxa de juros ${label} (%)`}
+						step={0.25}
+						onBlur={() => updateValues(periodo)}
+						onKeyPress={(e) => {
+							if (e.key === 'Enter') {
+								updateValues(periodo);
+							}
+						}}
+					/>
+				</Group>
+			))}
 		</FormProvider>
-
 	</PageWrapper>
 
 }

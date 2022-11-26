@@ -4,6 +4,8 @@ import Link from 'next/link'
 import { useLocalStorageValue } from '@mantine/hooks';
 import { useBreakpoint } from '../hooks/useBreakpoint';
 import { useRouter } from 'next/router';
+import { appSections } from '../pages';
+
 
 export const PageWrapper: React.FC = ({ children }) => {
 	const [persistedTheme, setPersistedTheme] = useLocalStorageValue<ColorScheme>({ key: 'theme', defaultValue: 'light' });
@@ -15,14 +17,24 @@ export const PageWrapper: React.FC = ({ children }) => {
 			return [];
 		}
 
+
 		return [
 			{
 				title: "Home",
 				href: "/",
 			},
 			...currentPath.map((path, index) => {
+				let title = path[0].toUpperCase() + path.slice(1);
+				appSections.forEach(section => {
+					section.items.forEach(item => {
+						if (item.href === `/${path}`) {
+							title = item.title;
+						}
+					})
+				});
+
 				return {
-					title: path[0].toUpperCase() + path.slice(1),
+					title,
 					href: `/${currentPath}`
 				}
 			})

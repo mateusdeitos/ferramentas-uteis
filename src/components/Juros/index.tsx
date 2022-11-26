@@ -2,13 +2,14 @@ import { Card, Divider, Group, Radio, Space, Text, useMantineColorScheme, useMan
 import React, { useEffect, useState } from "react";
 import { FormProvider, useForm } from 'react-hook-form';
 import { useBreakpoint } from "../../hooks/useBreakpoint";
-import { calcularMontanteFinal, calcularTaxaJuros, converterTaxaJuros } from "../../services/juros";
+import { calcularMontanteFinal, calcularTaxaJuros } from "../../services/juros";
 import { numeroBr } from "../../utils/formatters/numberFormat";
 import { CalculateButton } from '../CalculateButton';
 import { MontanteFinalForm } from "./MontanteFinalForm";
 import { RadioGroupComponent } from "../RadioGroup";
 import { TaxaJurosForm } from "./TaxaJurosForm";
 import { IResult, ResultSection } from '../ResultSection';
+import { converterTaxaJuros } from '../../services/conversao-juros';
 
 export interface IJurosForm {
 	periodo: number;
@@ -77,7 +78,8 @@ export const JurosForm: React.FC = () => {
 
 	useEffect(() => {
 		if (!!taxaJuros) {
-			setValue("taxaJuros", converterTaxaJuros(Number(taxaJuros), tipoPeriodoSelecionado));
+			const convertido = converterTaxaJuros(Number(taxaJuros), tipoPeriodoSelecionado == 'mes' ? 'ano' : 'mes');
+			setValue("taxaJuros", convertido[tipoPeriodoSelecionado]);
 		}
 	}, [tipoPeriodoSelecionado])
 
