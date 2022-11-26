@@ -8,7 +8,7 @@ import { useBreakpoint } from "../../hooks/useBreakpoint";
 import { converterTaxaJuros } from "../../services/juros";
 import { MontanteFinalForm } from "./MontanteFinalForm";
 import { TaxaJurosForm } from "./TaxaJurosForm";
-import { AmortizacaoEmprestimoForm } from "./AmortizacaoEmprestimoForm";
+
 export interface IJurosForm {
 	periodo: number;
 	valorInicial: number;
@@ -74,7 +74,6 @@ export const JurosForm: React.FC = () => {
 				>
 					<Radio value="montanteFinal">Montante final</Radio>
 					<Radio value="taxaJuros">Taxa de juros</Radio>
-					<Radio value="amortizacaoEmprestimo">Amortização do empréstimo</Radio>
 				</RadioGroupComponent>
 			</Group>
 			<Space h="md" />
@@ -83,7 +82,6 @@ export const JurosForm: React.FC = () => {
 
 			{modoCalculo === 'montanteFinal' && <MontanteFinalForm updateResult={result => setResult(result)} />}
 			{modoCalculo === 'taxaJuros' && <TaxaJurosForm updateResult={result => setResult(result)} />}
-			{modoCalculo === 'amortizacaoEmprestimo' && <AmortizacaoEmprestimoForm updateResult={result => setResult(result)} />}
 
 			<Space h="md" />
 
