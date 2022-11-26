@@ -44,7 +44,7 @@ export default function ConversaoJuros() {
 	return <PageWrapper>
 		<FormProvider {...form}>
 			{periodoOptions.map(({ periodo, label }) => (
-				<Group sx={{ marginBottom: 16 }}>
+				<Group key={periodo} sx={{ marginBottom: 16 }}>
 					<ValorInputComponent
 						name={`juros.${periodo}`}
 						label={`Taxa de juros ${label} (%)`}

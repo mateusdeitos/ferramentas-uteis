@@ -62,13 +62,13 @@ export const PageWrapper: React.FC = ({ children }) => {
 							{breadCrumbPaths.map((path, index, self) => {
 								if (index === self.length - 1) {
 									return (
-										<Text key={path.href} size="md" weight={600}>
+										<Text key={path.href} tabIndex={-1} size="md" weight={600}>
 											{path.title}
 										</Text>
 									)
 								}
 								return (
-									<Link href={path.href} key={index}>{path.title}</Link>
+									<Link href={path.href} key={path.href}>{path.title}</Link>
 								)
 							})}
 						</Breadcrumbs>
