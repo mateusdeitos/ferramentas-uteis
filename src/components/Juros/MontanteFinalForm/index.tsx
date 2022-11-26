@@ -1,8 +1,8 @@
 import { Group } from "@mantine/core"
 import { useFormContext } from "react-hook-form"
-import { IJurosForm, IResult } from ".."
-import { SelectComponent } from "../Select"
-import { ValorInputComponent } from "../ValorInput"
+import { IJurosForm } from ".."
+import { SelectComponent } from "../../Select"
+import { ValorInputComponent } from "../../ValorInput"
 
 export const MontanteFinalForm = () => {
 	const { watch } = useFormContext<IJurosForm>();

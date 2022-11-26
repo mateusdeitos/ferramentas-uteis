@@ -1,13 +1,14 @@
-import { Button, ButtonProps, Card, Divider, Group, Radio, Space, Text, useMantineColorScheme, useMantineTheme } from '@mantine/core';
-import { useHotkeys } from "@mantine/hooks";
+import { Card, Divider, Group, Radio, Space, Text, useMantineColorScheme, useMantineTheme } from '@mantine/core';
 import React, { useEffect, useState } from "react";
 import { FormProvider, useForm } from 'react-hook-form';
 import { useBreakpoint } from "../../hooks/useBreakpoint";
 import { calcularMontanteFinal, calcularTaxaJuros, converterTaxaJuros } from "../../services/juros";
 import { numeroBr } from "../../utils/formatters/numberFormat";
+import { CalculateButton } from '../CalculateButton';
 import { MontanteFinalForm } from "./MontanteFinalForm";
-import { RadioGroupComponent } from "./RadioGroup";
+import { RadioGroupComponent } from "../RadioGroup";
 import { TaxaJurosForm } from "./TaxaJurosForm";
+import { IResult, ResultSection } from '../ResultSection';
 
 export interface IJurosForm {
 	periodo: number;
@@ -21,12 +22,6 @@ export interface IJurosForm {
 	parcelasRestantes: number;
 }
 
-export interface IResult {
-	[key: string]: {
-		descricao: string;
-		valor: number | string;
-	}
-}
 
 
 export const JurosForm: React.FC = () => {
@@ -106,46 +101,12 @@ export const JurosForm: React.FC = () => {
 		{modoCalculo === 'montanteFinal' && <MontanteFinalForm />}
 		{modoCalculo === 'taxaJuros' && <TaxaJurosForm />}
 
-		<JurosFormCalculateButton onClick={modoCalculo === 'montanteFinal' ? handleCalculo : handleCalculoTaxaJuros} />
+		<CalculateButton onClick={modoCalculo === 'montanteFinal' ? handleCalculo : handleCalculoTaxaJuros} />
 		<Space h="md" />
 
 		{!!result && (
-			<Card>
-				<Card.Section sx={{ padding: "1rem 1rem 0 1rem" }}>
-					<Text weight={500} size="xl">Resultado</Text>
-					<Divider />
-					<Space h="md" />
-				</Card.Section>
-				<Card.Section>
-					<Group direction="column" sx={{ padding: "0 1rem 0.5rem 1rem" }}>
-						{result && Object.entries(result).map(([key, { descricao, valor }]) => {
-							return <Group key={key}>
-								<Text size="md" weight={300}>{descricao}:</Text><Text size="sm">{valor}</Text>
-							</Group>
-						})}
-					</Group>
-				</Card.Section>
-			</Card>
+			<ResultSection result={result} />
 		)}
 	</FormProvider>
 }
 
-const JurosFormCalculateButton: React.FC<ButtonProps<'button'>> = ({ children, ...props }) => {
-	const { isMobile } = useBreakpoint();
-	const { onClick = () => { } } = props;
-
-	useHotkeys([
-		['mod+Enter', () => onClick({} as React.MouseEvent<HTMLButtonElement>)],
-	]);
-	return <>
-		<Space h="md" />
-		<Divider />
-		<Space h="md" />
-		<Group>
-			<Button {...props}>
-				Calcular{!isMobile ? " (Ctrl+Enter)" : ""}
-				{children}
-			</Button>
-		</Group>
-	</>
-}

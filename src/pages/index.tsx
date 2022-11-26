@@ -26,6 +26,11 @@ const sections = [
 				description: "Calcule o montante final de um valor aplicado a uma taxa de juros ou calcule a taxa de juros necessária para atingir um montante final",
 				href: "/juros"
 			},
+			{
+				title: "Conversão de juros",
+				description: "Converta juros anuais em mensais e vice-versa",
+				href: "/conversao-juros"
+			},
 		]
 	},
 ]
