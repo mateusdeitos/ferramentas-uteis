@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { AppShell, ColorSchemeProvider, Burger, Group, Header, MantineProvider, MediaQuery, Navbar, Text, useMantineTheme, ColorScheme, ActionIcon, useMantineColorScheme, MantineTheme, CSSObject, MantineThemeOverride } from '@mantine/core';
+import { useMemo, useState } from 'react';
+import { AppShell, ColorSchemeProvider, Burger, Group, Header, MantineProvider, MediaQuery, Navbar, Text, useMantineTheme, ColorScheme, ActionIcon, useMantineColorScheme, MantineTheme, CSSObject, MantineThemeOverride, Breadcrumbs, Container } from '@mantine/core';
 import Link from 'next/link'
 import { useLocalStorageValue } from '@mantine/hooks';
 import { useBreakpoint } from '../hooks/useBreakpoint';
@@ -8,6 +8,26 @@ import { useRouter } from 'next/router';
 export const PageWrapper: React.FC = ({ children }) => {
 	const [persistedTheme, setPersistedTheme] = useLocalStorageValue<ColorScheme>({ key: 'theme', defaultValue: 'light' });
 	const [colorScheme, setColorScheme] = useState<ColorScheme>(persistedTheme);
+	const router = useRouter();
+	const breadCrumbPaths = useMemo(() => {
+		const currentPath = router.asPath.split("/").filter((path) => !!path);
+		if (!currentPath.length) {
+			return [];
+		}
+
+		return [
+			{
+				title: "Home",
+				href: "/",
+			},
+			...currentPath.map((path, index) => {
+				return {
+					title: path[0].toUpperCase() + path.slice(1),
+					href: `/${currentPath}`
+				}
+			})
+		]
+	}, [])
 	const toggleColorScheme = (value?: ColorScheme) => {
 		const newScheme = value || (colorScheme === 'light' ? 'dark' : 'light');
 		setColorScheme(newScheme);
@@ -24,7 +44,27 @@ export const PageWrapper: React.FC = ({ children }) => {
 	return (
 		<ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
 			<MantineProvider theme={{ colorScheme, ...theme }} withGlobalStyles withNormalizeCSS>
-				<Shell>{children}</Shell>
+				<Shell>
+					{!!breadCrumbPaths.length && (
+						<Breadcrumbs separator=">" style={{ marginBottom: 20, alignItems: "baseline" }}>
+							{breadCrumbPaths.map((path, index, self) => {
+								if (index === self.length - 1) {
+									return (
+										<Text key={path.href} size="md" weight={600}>
+											{path.title}
+										</Text>
+									)
+								}
+								return (
+									<Link href={path.href} key={index}>{path.title}</Link>
+								)
+							})}
+						</Breadcrumbs>
+					)}
+					<Container sx={theme => ({ ...styles(colorScheme).bg.sx(theme), paddingBottom: "2rem", paddingLeft: 0, paddingRight: 0 })}>
+						{children}
+					</Container>
+				</Shell>
 			</MantineProvider>
 		</ColorSchemeProvider>
 	);
@@ -35,6 +75,13 @@ export const styles = (colorScheme: ColorScheme) => ({
 		sx: (theme: MantineTheme) => ({
 			backgroundColor: colorScheme === 'light' ? theme.colors.gray[0] : theme.colors.dark[7]
 		})
+	},
+	shell: {
+		sx: (theme: MantineTheme) => ({
+			...styles(colorScheme).bg.sx(theme),
+			maxWidth: 960,
+			margin: "0 auto",
+		}),
 	},
 	text: {
 		sx: (theme: MantineTheme, isActive = false) => {
@@ -75,35 +122,13 @@ const Shell: React.FC = ({ children }) => {
 	const [opened, setOpened] = useState(false);
 	const theme = useMantineTheme();
 	const { isMobile } = useBreakpoint();
-	const { asPath } = useRouter();
 
 	return <AppShell
-		{...styles(colorScheme).bg}
+		{...styles(colorScheme).shell}
 		// navbarOffsetBreakpoint controls when navbar should no longer be offset with padding-left
 		navbarOffsetBreakpoint="sm"
 		// fixed prop on AppShell will be automatically added to Header and Navbar
 		fixed
-		navbar={
-			<Navbar
-				padding="md"
-				// Breakpoint at which navbar will be hidden if hidden prop is true
-				hiddenBreakpoint="sm"
-				// Hides navbar when viewport size is less than value specified in hiddenBreakpoint
-				hidden={!opened}
-				// when viewport size is less than theme.breakpoints.sm navbar width is 100%
-				// viewport size > theme.breakpoints.sm – width is 300px
-				// viewport size > theme.breakpoints.lg – width is 400px
-				width={{ sm: 150, lg: 200 }}
-				{...styles(colorScheme).bg}
-			>
-				<Link href="/juros">
-					<Text sx={{
-						...styles(colorScheme).text.sx(theme, asPath === '/juros'),
-					}}>Cálculo de juros</Text>
-				</Link>
-
-			</Navbar>
-		}
 		header={
 			<Header height={70} padding="md" {...styles(colorScheme).bg}>
 				{/* Handle other responsive styles with MediaQuery component or createStyles function */}
