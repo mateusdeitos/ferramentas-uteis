@@ -17,6 +17,8 @@ export const ValorInputComponent: React.FC<Props> = ({ name = "numberInput", rul
 				precision={2}
 				value={value}
 				{...props}
+				size="lg"
+				autoComplete='off'
 				name={name}
 				decimalSeparator=","
 				error={error?.message}

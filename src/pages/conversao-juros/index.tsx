@@ -41,7 +41,7 @@ export default function ConversaoJuros() {
 
 	}
 
-	return <PageWrapper>
+	return <PageWrapper title="Conversão de taxa de juros equivalente">
 		<FormProvider {...form}>
 			{periodoOptions.map(({ periodo, label }) => (
 				<Group key={periodo} sx={{ marginBottom: 16 }}>

@@ -3,7 +3,7 @@ import { PageWrapper } from "../../components/PageWrapper";
 
 
 export default function Juros() {
-	return <PageWrapper>
+	return <PageWrapper title="Cálculo de montante aplicado a uma taxa de juros">
 		<JurosForm />
 	</PageWrapper>
 

@@ -15,7 +15,6 @@ export const CardItem = ({ title, href, description }: PropsWithChildren<{ title
 			<Text weight={500} size="lg">{title}</Text>
 			<Divider sx={{ marginBottom: 10 }} />
 			<Text weight={300} size="sm">{description}</Text>
-
 		</Card>
 	</Link>
 }

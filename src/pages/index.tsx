@@ -6,7 +6,7 @@ import { PageWrapper } from "../components/PageWrapper";
 
 export default function Home() {
 	return (
-		<PageWrapper>
+		<PageWrapper title="Ferramentas úteis de diversas áreas">
 			{appSections.map((section, index, self) => {
 				return <>
 					<Section key={section.title} title={section.title}>
@@ -37,15 +37,15 @@ export const appSections = [
 			},
 		]
 	},
-	// {
-	// 	title: "Coding 🖥️",
-	// 	items: [
-	// 		{
-	// 			title: "Conversor JSON",
-	// 			description: "Converta JSON em diversos formatos",
-	// 			href: "/conversor-json"
-	// 		}
-	// 	]
-	// }
+	{
+		title: "Programação 🖥️",
+		items: [
+			{
+				title: "Conversor JSON",
+				description: "Converta JSON em diversos formatos",
+				href: "/conversor-json"
+			}
+		]
+	}
 ]
 

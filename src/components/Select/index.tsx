@@ -11,6 +11,7 @@ export const SelectComponent: React.FC<SelectProps> = ({ name = "selectInput", c
 			return <Select
 				{...props}
 				ref={ref}
+				size="lg"
 				value={value}
 				onChange={(value) => onChange(value)}
 			>{children}</Select>

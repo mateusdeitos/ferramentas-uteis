@@ -1,15 +1,14 @@
-import { Card, Divider, Group, Radio, Space, Text, useMantineColorScheme, useMantineTheme } from '@mantine/core';
+import { Divider, Group, Radio, Space, Text } from '@mantine/core';
 import React, { useEffect, useState } from "react";
 import { FormProvider, useForm } from 'react-hook-form';
 import { useBreakpoint } from "../../hooks/useBreakpoint";
+import { converterTaxaJuros } from '../../services/conversao-juros';
 import { calcularMontanteFinal, calcularTaxaJuros } from "../../services/juros";
 import { numeroBr } from "../../utils/formatters/numberFormat";
 import { CalculateButton } from '../CalculateButton';
-import { MontanteFinalForm } from "./MontanteFinalForm";
-import { RadioGroupComponent } from "../RadioGroup";
-import { TaxaJurosForm } from "./TaxaJurosForm";
 import { IResult, ResultSection } from '../ResultSection';
-import { converterTaxaJuros } from '../../services/conversao-juros';
+import { MontanteFinalForm } from "./MontanteFinalForm";
+import { TaxaJurosForm } from "./TaxaJurosForm";
 
 export interface IJurosForm {
 	periodo: number;
@@ -87,14 +86,16 @@ export const JurosForm: React.FC = () => {
 		<Text size="xl">Cálculo de Juros</Text>
 		<Divider sx={{ marginBottom: "1rem" }} />
 		<Group>
-			<RadioGroupComponent
+			<Radio.Group
 				label="O que você quer calcular"
-				name="modoCalculo"
-				variant={isMobile ? "vertical" : "horizontal"}
+				orientation={isMobile ? "vertical" : "horizontal"}
+				size="lg"
+				value={form.watch("modoCalculo")}
+				onChange={(value) => form.setValue("modoCalculo", value as IJurosForm["modoCalculo"])}
 			>
-				<Radio value="montanteFinal">Montante final</Radio>
-				<Radio value="taxaJuros">Taxa de juros</Radio>
-			</RadioGroupComponent>
+				<Radio value="taxaJuros" label="Taxa de juros" />
+				<Radio value="montanteFinal" label="Montante final" />
+			</Radio.Group>
 		</Group>
 		<Space h="md" />
 		<Divider />
@@ -103,12 +104,16 @@ export const JurosForm: React.FC = () => {
 		{modoCalculo === 'montanteFinal' && <MontanteFinalForm />}
 		{modoCalculo === 'taxaJuros' && <TaxaJurosForm />}
 
-		<CalculateButton onClick={modoCalculo === 'montanteFinal' ? handleCalculo : handleCalculoTaxaJuros} />
+		<CalculateButton withHotkey onClick={modoCalculo === 'montanteFinal' ? handleCalculo : handleCalculoTaxaJuros}>
+			Calcular
+		</CalculateButton>
 		<Space h="md" />
 
-		{!!result && (
-			<ResultSection result={result} />
-		)}
-	</FormProvider>
+		{
+			!!result && (
+				<ResultSection result={result} />
+			)
+		}
+	</FormProvider >
 }
 
