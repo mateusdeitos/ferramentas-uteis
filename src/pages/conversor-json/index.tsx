@@ -17,6 +17,11 @@ export default function ConversorJson() {
 				description="Ferramenta para converter o retorno do comando 'print_r' do PHP para JSON"
 				href="/conversor-json/php-print_r-to-json"
 			/>
+			<CardItem
+				title="Converter JSON para TypeScript"
+				description="Ferramenta para converter um objeto JSON para tipagens em TypeScript"
+				href="/conversor-json/json-to-typescript"
+			/>
 		</SimpleGrid>
 	</PageWrapper>
 }
