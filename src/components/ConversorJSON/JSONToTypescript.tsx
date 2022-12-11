@@ -77,7 +77,8 @@ export const JSONToTypescript = () => {
 		/>
 
 		<Switch
-			label="Parse as a single Interface"
+			label="Parse as a single Interface/Type"
+			description="If true, the JSON will be parsed as a single interface/type, otherwise, each object will be parsed as a separate interface/type"
 			size="xs"
 			checked={formValues.parseAsSingleInterface}
 			onChange={({ target: { checked: createEachObjectAsASeparateInstance } }) => setFormValues({ ...formValues, parseAsSingleInterface: createEachObjectAsASeparateInstance })}

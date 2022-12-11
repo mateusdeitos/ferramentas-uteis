@@ -144,7 +144,7 @@ export class JsonPrimitive {
 	}
 
 	public static from(value: any): JsonPrimitive {
-		if (isNumber(value)) {
+		if (isNumber(value) && !isBoolean(value)) {
 			return new JsonPrimitive(value, "number");
 		} else if (isString(value)) {
 			return new JsonPrimitive(value, "string");
