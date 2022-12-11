@@ -1,4 +1,4 @@
-import { ActionIcon, Anchor, AppShell, Breadcrumbs, Burger, ColorScheme, ColorSchemeProvider, Container, CSSObject, Group, Header, MantineProvider, MantineTheme, MantineThemeOverride, MediaQuery, Text, useMantineColorScheme, useMantineTheme } from '@mantine/core';
+import { ActionIcon, Anchor, AppShell, Breadcrumbs, Burger, ColorScheme, ColorSchemeProvider, Container, CSSObject, Group, Header, MantineProvider, MantineTheme, MantineThemeOverride, MediaQuery, Sx, Text, useMantineColorScheme, useMantineTheme } from '@mantine/core';
 import { NotificationsProvider } from '@mantine/notifications';
 import Head from 'next/head';
 import Link from 'next/link';
@@ -56,7 +56,7 @@ const BreadCrumbs = ({ title = "" }) => {
 			}
 		}, {})
 
-		const currentPath = pagePath.split("/")
+		const currentPath: Array<{ title: string; href: string }> = pagePath.split("/")
 			.map(path => {
 				if (!path) return "";
 
@@ -100,16 +100,26 @@ const BreadCrumbs = ({ title = "" }) => {
 
 	return <Breadcrumbs separator=">" style={{ marginBottom: 20, alignItems: "baseline" }}>
 		{breadCrumbPaths.map((path, index, self) => {
+			const sx: Sx = theme => ({
+				fontWeight: 600,
+				[`@media (max-width: ${theme.breakpoints.md}px)`]: {
+					fontSize: theme.fontSizes.md
+				},
+				[`@media (max-width: ${theme.breakpoints.xs}px)`]: {
+					fontSize: theme.fontSizes.xs
+				},
+			});
+
 			if (index === self.length - 1) {
 				return (
-					<Text key={index} tabIndex={-1} size="md" weight={600}>
+					<Text key={index} tabIndex={-1} sx={sx}>
 						{path.title}
 					</Text>
 				)
 			}
 			return (
 				<Link passHref href={"/" + path.href} key={index}>
-					<Anchor href={"/" + path.href} tabIndex={-1} size="md" weight={600}>
+					<Anchor href={"/" + path.href} tabIndex={-1} sx={sx}>
 						{path.title}
 					</Anchor>
 				</Link>

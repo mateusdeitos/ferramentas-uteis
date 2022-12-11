@@ -2,6 +2,7 @@ import { Divider, Group, Radio, Space, Text } from '@mantine/core';
 import React, { useEffect, useState } from "react";
 import { FormProvider, useForm } from 'react-hook-form';
 import { useBreakpoint } from "../../hooks/useBreakpoint";
+import { useInputSize } from '../../hooks/useInputSize';
 import { converterTaxaJuros } from '../../services/conversao-juros';
 import { calcularMontanteFinal, calcularTaxaJuros } from "../../services/juros";
 import { numeroBr } from "../../utils/formatters/numberFormat";
@@ -27,6 +28,7 @@ export interface IJurosForm {
 export const JurosForm: React.FC = () => {
 	const { isMobile } = useBreakpoint();
 	const [result, setResult] = useState<IResult | null>(null);
+	const size = useInputSize();
 
 	const form = useForm<IJurosForm>({
 		defaultValues: {
@@ -88,8 +90,8 @@ export const JurosForm: React.FC = () => {
 		<Group>
 			<Radio.Group
 				label="O que você quer calcular"
-				orientation={isMobile ? "vertical" : "horizontal"}
-				size="lg"
+				orientation="horizontal"
+				size={size}
 				value={form.watch("modoCalculo")}
 				onChange={(value) => form.setValue("modoCalculo", value as IJurosForm["modoCalculo"])}
 			>

@@ -1,5 +1,7 @@
-import { NumberInput, NumberInputProps } from '@mantine/core'
-import { useFormContext, Controller, UseControllerProps } from 'react-hook-form';
+import { NumberInput, NumberInputProps, Sx } from '@mantine/core';
+import { Controller, UseControllerProps, useFormContext } from 'react-hook-form';
+import { useBreakpoint } from '../../hooks/useBreakpoint';
+import { useInputSize } from '../../hooks/useInputSize';
 
 type Props = NumberInputProps & {
 	rules?: UseControllerProps["rules"]
@@ -7,6 +9,12 @@ type Props = NumberInputProps & {
 
 export const ValorInputComponent: React.FC<Props> = ({ name = "numberInput", rules, ...props }) => {
 	const { control } = useFormContext();
+	const { isMobile } = useBreakpoint();
+	const size = useInputSize();
+
+	const sx: Sx = theme => ({
+		width: isMobile ? '100%' : '25%',
+	})
 
 	return <Controller
 		control={control}
@@ -17,7 +25,8 @@ export const ValorInputComponent: React.FC<Props> = ({ name = "numberInput", rul
 				precision={2}
 				value={value}
 				{...props}
-				size="lg"
+				sx={sx}
+				size={size}
 				autoComplete='off'
 				name={name}
 				decimalSeparator=","
