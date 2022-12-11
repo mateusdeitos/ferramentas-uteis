@@ -4,11 +4,11 @@ import { showNotification } from "@mantine/notifications";
 import { Prism } from "@mantine/prism";
 import { useState } from "react";
 import { JsonObject, JsonParserTypes } from "../../services/json-parser";
-import { TypescriptInterfaceOrType } from "../../services/typescript-json-parser";
+import { TypescriptInterfaceOrType, TypescriptParsingOptions } from "../../services/typescript-json-parser";
 
 type TForm = {
 	json: string
-} & JsonParserTypes.ConversionOptions;
+} & TypescriptParsingOptions;
 
 
 export const JSONToTypescript = () => {
@@ -152,7 +152,7 @@ const useOpenDrawer = () => {
 		onClose: () => setDrawerProps(v => ({ ...v, parsed: undefined })),
 	});
 
-	const open = (json: string, options: JsonParserTypes.ConversionOptions) => {
+	const open = (json: string, options: TForm) => {
 		const parsed = parseJson(json, options);
 		if (!parsed) {
 			showNotification({
@@ -170,7 +170,7 @@ const useOpenDrawer = () => {
 	return [open, drawerProps] as const
 }
 
-const parseJson = (json: string, options: JsonParserTypes.ConversionOptions) => {
+const parseJson = (json: string, options: TForm) => {
 	try {
 		const parsed = JSON.parse(json);
 		const result = JsonObject.fromJson(parsed, options);

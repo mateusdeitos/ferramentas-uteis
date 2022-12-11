@@ -2,10 +2,8 @@ type TypescriptPrimitives = string | number | boolean | null | undefined;
 
 export declare module JsonParserTypes {
 	type ConversionOptions = {
-		createObjectsAsTypes: boolean
 		considerNullValuesAsOptional: boolean
 		rootObjectName: string
-		parseAsSingleInterface: boolean;
 	}
 
 }

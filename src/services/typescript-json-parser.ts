@@ -1,12 +1,17 @@
 import { JsonArray, JsonArrayItem, JsonObject, JsonObjectProperty, JsonParserTypes, JsonPrimitive } from "./json-parser";
 
+export type TypescriptParsingOptions = JsonParserTypes.ConversionOptions & {
+	createObjectsAsTypes: boolean
+	parseAsSingleInterface: boolean;
+}
+
 export class TypescriptInterfaceOrType {
 	private properties: TypescriptProperty[] = [];
 	private interfaceType: "interface" | "type" = "interface";
 
 	constructor(
 		private name: string,
-		options: JsonParserTypes.ConversionOptions,
+		options: TypescriptParsingOptions,
 	) {
 		if (options?.createObjectsAsTypes === true) {
 			this.interfaceType = "type";
@@ -25,7 +30,7 @@ export class TypescriptInterfaceOrType {
 		return this.properties;
 	}
 
-	public static fromJsonToSingleInstance(json: JsonObject, name: string, options: JsonParserTypes.ConversionOptions): TypescriptInterfaceOrType {
+	public static fromJsonToSingleInstance(json: JsonObject, name: string, options: TypescriptParsingOptions): TypescriptInterfaceOrType {
 		const result = new TypescriptInterfaceOrType(name, options);
 
 		json.getProperties().forEach((property) => {
@@ -41,7 +46,7 @@ export class TypescriptInterfaceOrType {
 		return result;
 	}
 
-	public static fromRecord(record: TypescriptRecord, name: string, options: JsonParserTypes.ConversionOptions): TypescriptInterfaceOrType {
+	public static fromRecord(record: TypescriptRecord, name: string, options: TypescriptParsingOptions): TypescriptInterfaceOrType {
 		const result = new TypescriptInterfaceOrType(name, options);
 
 		record.getProperties().forEach((property) => {
@@ -57,7 +62,7 @@ export class TypescriptInterfaceOrType {
 		return result;
 	}
 
-	public static fromJsonToMultipleInstances(json: JsonObject, name: string, options: JsonParserTypes.ConversionOptions): TypescriptInterfaceOrType[] {
+	public static fromJsonToMultipleInstances(json: JsonObject, name: string, options: TypescriptParsingOptions): TypescriptInterfaceOrType[] {
 		const main = new TypescriptInterfaceOrType(name, options);
 		const result: TypescriptInterfaceOrType[] = [];
 
@@ -210,7 +215,7 @@ export class TypescriptType {
 
 	public static from(
 		json: JsonPrimitive | JsonObject | JsonArray | JsonArrayItem,
-		options: JsonParserTypes.ConversionOptions,
+		options: TypescriptParsingOptions,
 	): TypescriptType {
 		if (json instanceof JsonPrimitive) {
 			return TypescriptType.types[json.getType()];
@@ -240,7 +245,7 @@ export class TypescriptArray extends TypescriptType {
 		return this.type;
 	}
 
-	public static from(json: JsonArray, options: JsonParserTypes.ConversionOptions): TypescriptArray {
+	public static from(json: JsonArray, options: TypescriptParsingOptions): TypescriptArray {
 		const UnionType = new TypescriptUnionType();
 		json.getItems().forEach((item) => {
 			UnionType.addType(TypescriptType.from(item, options));
@@ -281,7 +286,7 @@ export class TypescriptRecord extends TypescriptType {
 		return this.properties;
 	}
 
-	public static from(json: JsonObject, options: JsonParserTypes.ConversionOptions): TypescriptRecord {
+	public static from(json: JsonObject, options: TypescriptParsingOptions): TypescriptRecord {
 		const result = new TypescriptRecord();
 
 		json.getProperties().forEach((property) => {
