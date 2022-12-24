@@ -65,7 +65,7 @@ export const JSONToPHPClasses = () => {
 		if (!parsed) {
 			showNotification({
 				title: "Erro",
-				message: "Não foi possível converter o JSON, verifique se o json é válido",
+				message: "Could not parse JSON, check if it is valid",
 			});
 
 			return;
@@ -179,13 +179,13 @@ export const JSONToPHPClasses = () => {
 			<Button
 				disabled={!json}
 				onClick={handleOpen}>
-				Converter
+				Convert
 			</Button>
 			<Button
 				variant="subtle"
 				disabled={!json}
 				onClick={() => form.setValue("json", "")}>
-				Limpar
+				Clear
 			</Button>
 		</Group>
 	</>

@@ -52,7 +52,7 @@ export const JSONToTypescript = () => {
 		if (!parsed) {
 			showNotification({
 				title: "Erro",
-				message: "Não foi possível converter o JSON, verifique se o json é válido",
+				message: "Could not parse JSON, check if it is valid",
 			});
 
 			return;
@@ -117,13 +117,13 @@ export const JSONToTypescript = () => {
 			<Button
 				disabled={!formValues.json}
 				onClick={handleOpenResult}>
-				Converter
+				Convert
 			</Button>
 			<Button
 				variant="subtle"
 				disabled={!formValues.json}
 				onClick={() => setFormValues(v => ({ ...v, json: "" }))}>
-				Limpar
+				Clear
 			</Button>
 		</Group>
 	</>
