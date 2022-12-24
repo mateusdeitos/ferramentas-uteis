@@ -1,6 +1,5 @@
-import { AppShell, Avatar, Flex, Group, Header, Text, useMantineTheme } from '@mantine/core';
+import { AppShell, Flex, Group, Header, Text, useMantineTheme } from '@mantine/core';
 import Link from 'next/link';
-import { useGithubProfile } from '../../hooks/queries/useGithubProfile';
 import { useBreakpoint } from '../../hooks/useBreakpoint';
 import { AuthorAvatar } from '../AuthorAvatar';
 import { styles } from "./styles";
@@ -35,7 +34,7 @@ export const Shell: React.FC = ({ children }) => {
 								fontWeight: 400
 							}}
 							>
-								About
+								About me
 							</Text>
 						</Flex>
 					</Link>
