@@ -1,8 +1,9 @@
-import { Anchor, Button, Divider, Drawer, Flex, LoadingOverlay, Text, ThemeIcon, Title } from "@mantine/core";
+import { Anchor, Button, Divider, Drawer, Flex, LoadingOverlay, MantineColor, Text, ThemeIcon, Title, useMantineTheme } from "@mantine/core";
 import { useToggle } from "@mantine/hooks";
 import { IconBrandGithub, IconBrandLinkedin } from "@tabler/icons";
 import { isValidElement, ReactNode } from "react";
 import { AuthorAvatar } from "../../components/AuthorAvatar";
+import { ExternalLink } from "../../components/ExternalLink";
 import { CardItem } from "../../components/Home/CardItem";
 import { PageWrapper } from "../../components/PageWrapper";
 import { useGithubProfile } from "../../hooks/queries/useGithubProfile";
@@ -35,39 +36,74 @@ export default function About() {
 					)}
 
 					<Divider w="100%" />
+
 					{!!profile?.name && <Info label="Name" value={profile.name} />}
+
 					<Divider w="100%" />
+
+					{!!profile?.bio && <Info label="Bio" value={profile.bio} />}
+
+					<Divider w="100%" />
+
+					{!!profile?.repos_url && <Info label="My Github Repositores" value={<LinkDrawerRepositories {...profile} />} />}
+
+					<Divider w="100%" />
+
+					<InfoGroup>
+						{!!profile?.company && <Info label="Company" value={profile.company} />}
+						{!!profile?.location && <Info label="Location" value={profile.location} />}
+						{!!profile?.following && <Info label="Following (Github)" value={profile.following} />}
+						{!!profile?.followers && <Info label="Followers (Github)" value={profile.followers} />}
+					</InfoGroup>
+
+					<Divider w="100%" />
+
+					<Title order={4}>Contact</Title>
 					<InfoGroup>
 						{!!profile?.html_url && (
 							<InfoSocialMedia
 								Icon={<ThemeIcon size="md" color="dark"><IconBrandGithub /></ThemeIcon>}
 								label="Github"
+								color="dark"
 								href={profile.html_url}
 							/>
 						)}
 						<InfoSocialMedia
 							Icon={<ThemeIcon size="md" color="blue"><IconBrandLinkedin /></ThemeIcon>}
-							label="Linkedin"
+							label="LinkedIn"
+							color="blue"
 							href="https://www.linkedin.com/in/mateus-deitos/"
 						/>
 					</InfoGroup>
-					{!!profile?.repos_url && <Info label="My Github Repositores" value={<LinkDrawerRepositories {...profile} />} />}
+
 					<Divider w="100%" />
+
+					<Title order={4}>Other projects</Title>
 					<InfoGroup>
-						{!!profile?.company && <Info label="Company" value={profile.company} />}
-						{!!profile?.location && <Info label="Location" value={profile.location} />}
-					</InfoGroup>
-					<Divider w="100%" />
-					{!!profile?.bio && <Info label="Bio" value={profile.bio} />}
-					<Divider w="100%" />
-					<InfoGroup>
-						{!!profile?.following && <Info label="Following" value={profile.following} />}
-						{!!profile?.followers && <Info label="Followers" value={profile.followers} />}
+						<InfoProject
+							name="Stravando"
+							url="https://stravando.mateusdeitos.dev"
+							description="Stravando is a web application that allows you to see compare your Strava milestones with known distances in order to keep your motivation in your training."
+						/>
 					</InfoGroup>
 				</>
 			)}
 		</Flex>
 	</PageWrapper>
+}
+
+const InfoProject = ({ name, url, description }: { name: string, url: string, description: string }) => {
+	const theme = useMantineTheme();
+	return (
+		<Info label={<Text size="lg" weight={600}>{name}</Text>} value={(
+			<Flex direction="column" gap={8}>
+				<ExternalLink href={url} />
+				<Text size="sm">
+					{description}
+				</Text>
+			</Flex>
+		)} />
+	)
 }
 
 const LinkDrawerRepositories = ({ repos_url }: IGithubProfile) => {
@@ -86,9 +122,9 @@ const LinkDrawerRepositories = ({ repos_url }: IGithubProfile) => {
 	}
 
 	return <>
-		<Button variant="subtle" color="blue" radius="xs" compact onClick={() => toggle(true)}>
+		<Anchor onClick={() => toggle(true)}>
 			{repos?.length} public
-		</Button>
+		</Anchor>
 		<Drawer
 			padding="xl"
 			position="right"
@@ -108,7 +144,7 @@ const LinkDrawerRepositories = ({ repos_url }: IGithubProfile) => {
 			{isSuccess && (
 				<Flex direction="row" gap={8} wrap="wrap" align="flex-start">
 					{repos?.map((repo) => {
-						return <CardRepository {...repo} />
+						return <CardRepository key={repo.id} {...repo} />
 					})}
 				</Flex>
 			)}
@@ -126,16 +162,10 @@ const CardRepository = ({ html_url, description, name }: IGithubUserRepository) 
 	/>
 }
 
-const InfoSocialMedia = ({ Icon, label, href }: { Icon: ReactNode; label: string; href: string }) => {
-	return <Info label={(
-		<Flex direction="row">
-			{Icon}&nbsp;{label}
-		</Flex>
-	)} value={(
-		<Anchor href={href} target="_blank">
-			{href}
-		</Anchor>
-	)} />
+const InfoSocialMedia = ({ Icon, label, href, color }: { Icon: ReactNode; href: string, color: MantineColor, label: string }) => {
+	return <Button component="a" title={label} color={color} variant="filled" href={href} target="_blank">
+		{Icon}&nbsp;{label}
+	</Button>
 }
 
 const InfoGroup = ({ children }: { children: ReactNode }) => {
