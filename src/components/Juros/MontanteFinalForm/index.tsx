@@ -14,13 +14,13 @@ export const MontanteFinalForm = () => {
 		<Group>
 			<ValorInputComponent
 				name="valorInicial"
-				label="Valor inicial"
+				label="Initial value"
 				hideControls
 				rules={{
-					required: "Valor inicial é obrigatório",
+					required: "Initial value is required",
 					min: {
 						value: 0.01,
-						message: "Valor inicial deve ser maior que 0",
+						message: "Initial value must be greater than 0",
 					}
 				}}
 			/>
@@ -28,27 +28,27 @@ export const MontanteFinalForm = () => {
 		<Group>
 			<ValorInputComponent
 				name="periodo"
-				label={tipoPeriodo === 'ano' ? "Período (anos)" : "Período (meses)"}
+				label={tipoPeriodo === 'yearly' ? "Years" : "Months"}
 				rules={{
-					required: "Período é obrigatório",
+					required: "Period is required",
 					min: {
 						value: 1,
-						message: "Período deve ser maior que 0",
+						message: "Period must be greater than 0",
 					}
 				}}
 				precision={0}
 			/>
 			<SelectComponent
 				name="tipoPeriodo"
-				label="Tipo de período"
+				label="Period type"
 				data={[
 					{
-						value: "mes",
-						label: "Mês"
+						value: "monthly",
+						label: "Month"
 					},
 					{
-						value: "ano",
-						label: "Ano"
+						value: "yearly",
+						label: "Year"
 					}
 				]} />
 		</Group>
@@ -56,13 +56,13 @@ export const MontanteFinalForm = () => {
 		<Group>
 			<ValorInputComponent
 				name="taxaJuros"
-				label="Taxa de Juros (%)"
+				label="Interest rate (%)"
 				step={0.25}
 				rules={{
-					required: "Taxa de juros é obrigatória",
+					required: "Interest rate is required",
 					min: {
 						value: 0.01,
-						message: "Taxa de juros deve ser maior que 0",
+						message: "Interest rate must be greater than 0",
 					}
 				}}
 				precision={8}

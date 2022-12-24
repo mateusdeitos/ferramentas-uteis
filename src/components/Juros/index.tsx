@@ -15,15 +15,13 @@ export interface IJurosForm {
 	periodo: number;
 	valorInicial: number;
 	taxaJuros: number;
-	tipoPeriodo: "mes" | "ano";
+	tipoPeriodo: "monthly" | "yearly";
 	montanteFinal: number;
 	modoCalculo: "taxaJuros" | "montanteFinal";
 	saldoDevedor: number;
 	valorAmortizar: number;
 	parcelasRestantes: number;
 }
-
-
 
 export const JurosForm: React.FC = () => {
 	const { isMobile } = useBreakpoint();
@@ -32,7 +30,7 @@ export const JurosForm: React.FC = () => {
 
 	const form = useForm<IJurosForm>({
 		defaultValues: {
-			tipoPeriodo: "mes",
+			tipoPeriodo: "monthly",
 			periodo: 12,
 			modoCalculo: "montanteFinal",
 		},
@@ -56,15 +54,15 @@ export const JurosForm: React.FC = () => {
 
 	const handleCalculoTaxaJuros = handleSubmit((values) => {
 		const { taxaJurosCalculada } = calcularTaxaJuros(values);
-		const pluralPeriodo = values.tipoPeriodo === "mes" ? "mes(es)" : "ano(s)";
+		const pluralPeriodo = values.tipoPeriodo === "monthly" ? "months" : "years";
 		setResult({
 			taxaJuros: {
-				descricao: "Taxa de juros",
-				valor: numeroBr(taxaJurosCalculada * 100) + "%" + (values.tipoPeriodo === "ano" ? " a.a" : " a.m"),
+				descricao: "Interest rate",
+				valor: numeroBr(taxaJurosCalculada * 100) + "%" + values.tipoPeriodo,
 			},
 			rendimento: {
-				descricao: `R$ ${numeroBr(values.valorInicial)} a uma taxa de juros de ${numeroBr(taxaJurosCalculada * 100)}% durante ${values.periodo} ${pluralPeriodo}`,
-				valor: "R$ " + numeroBr(values.montanteFinal)
+				descricao: `$ ${numeroBr(values.valorInicial)} at a interest rate of ${numeroBr(taxaJurosCalculada * 100)}% for ${values.periodo} ${pluralPeriodo}`,
+				valor: "$ " + numeroBr(values.montanteFinal)
 			}
 		});
 	})
@@ -79,24 +77,24 @@ export const JurosForm: React.FC = () => {
 
 	useEffect(() => {
 		if (!!taxaJuros) {
-			const convertido = converterTaxaJuros(Number(taxaJuros), tipoPeriodoSelecionado == 'mes' ? 'ano' : 'mes');
+			const convertido = converterTaxaJuros(Number(taxaJuros), tipoPeriodoSelecionado == 'yearly' ? 'yearly' : 'monthly');
 			setValue("taxaJuros", convertido[tipoPeriodoSelecionado]);
 		}
 	}, [tipoPeriodoSelecionado])
 
 	return <FormProvider {...form}>
-		<Text size="xl">Cálculo de Juros</Text>
+		<Text size="xl">Interest rate calculator</Text>
 		<Divider sx={{ marginBottom: "1rem" }} />
 		<Group>
 			<Radio.Group
-				label="O que você quer calcular"
+				label="What do you want to calculate"
 				orientation="horizontal"
 				size={size}
 				value={form.watch("modoCalculo")}
 				onChange={(value) => form.setValue("modoCalculo", value as IJurosForm["modoCalculo"])}
 			>
-				<Radio value="taxaJuros" label="Taxa de juros" />
-				<Radio value="montanteFinal" label="Montante final" />
+				<Radio value="taxaJuros" label="Interest rate" />
+				<Radio value="montanteFinal" label="Final amount" />
 			</Radio.Group>
 		</Group>
 		<Space h="md" />
