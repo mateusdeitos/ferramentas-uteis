@@ -1,11 +1,10 @@
-import { Button, CopyButton, Divider, Drawer, Group, JsonInput, MultiSelect, Radio, Space, Switch, TextInput, Tooltip } from "@mantine/core";
+import { Button, Divider, Group, JsonInput, MultiSelect, Radio, Space, Switch, TextInput } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { PhpClass } from "../../services/conversao-json/php/PhpClass";
 import { PhpParsingOptions } from "../../services/conversao-json/php/types";
 import { JsonObject } from "../../services/json-parser";
-import { Prism } from "../Prism";
+import { DrawerResultConversion, useOpenDrawer } from "../DrawerResultConversion";
 
 type TForm = {
 	json: string
@@ -61,8 +60,22 @@ export const JSONToPHPClasses = () => {
 		}
 	}
 
+	const handleOpen = () => {
+		const parsed = parseJson(json, form.getValues());
+		if (!parsed) {
+			showNotification({
+				title: "Erro",
+				message: "Não foi possível converter o JSON, verifique se o json é válido",
+			});
+
+			return;
+		}
+
+		open(parsed.map(c => c.serialize()));
+	}
+
 	return <>
-		<DrawerResult {...drawerProps} />
+		<DrawerResultConversion {...drawerProps} />
 		<JsonInput
 			label="JSON"
 			description="Insert a valid JSON		"
@@ -165,10 +178,7 @@ export const JSONToPHPClasses = () => {
 		<Group>
 			<Button
 				disabled={!json}
-				onClick={() => open(
-					json,
-					form.getValues()
-				)}>
+				onClick={handleOpen}>
 				Converter
 			</Button>
 			<Button
@@ -179,68 +189,6 @@ export const JSONToPHPClasses = () => {
 			</Button>
 		</Group>
 	</>
-}
-
-interface IDrawerResultProps {
-	parsed?: PhpClass[];
-	onClose: () => void;
-}
-
-const DrawerResult = ({ parsed, onClose }: IDrawerResultProps) => {
-	return <Drawer
-		padding="xl"
-		position="right"
-		size={900}
-		title="Result"
-		opened={!!parsed}
-		onClose={onClose}
-		styles={{
-			drawer: {
-				height: "100%",
-				overflowY: "auto",
-			}
-		}}
-	>
-		{!!parsed?.length && (
-			<>
-				{parsed.map((item, index) => {
-					return <Prism sx={{ marginTop: 12 }} key={index} language={"php" as any}>{item?.serialize?.() ?? ""}</Prism>
-				})}
-				<Space h="md" />
-				<CopyButton timeout={2000} value={parsed.map(item => item.serialize()).join("\n\n")}>{({ copied, copy }) => {
-					return <Tooltip label={copied ? 'Copied' : 'Copy All'} withArrow position="top">
-						<Button color={copied ? "teal" : "blue"} onClick={copy}>
-							{copied ? "Copied" : "Copy all"}
-						</Button>
-					</Tooltip>
-				}}</CopyButton>
-			</>
-		)}
-	</Drawer>
-}
-
-const useOpenDrawer = () => {
-	const [drawerProps, setDrawerProps] = useState<IDrawerResultProps>({
-		parsed: undefined,
-		onClose: () => setDrawerProps(v => ({ ...v, parsed: undefined })),
-	});
-
-	const open = (json: string, options: TForm) => {
-		const parsed = parseJson(json, options);
-		if (!parsed) {
-			showNotification({
-				title: "Erro",
-				message: "Não foi possível converter o JSON, verifique se o json é válido",
-			});
-
-			return;
-		}
-
-		setDrawerProps(v => ({ ...v, parsed }));
-
-		return close;
-	}
-	return [open, drawerProps] as const
 }
 
 const parseJson = (json: string, options: TForm) => {
