@@ -1,9 +1,19 @@
-import { Card, Divider, Text } from "@mantine/core"
+import { Anchor, Card, Divider, Text } from "@mantine/core"
 import Link from "next/link"
-import { PropsWithChildren } from "react"
+import { PropsWithChildren, ReactNode } from "react"
 
-export const CardItem = ({ title, href, description }: PropsWithChildren<{ title: string, href: string, description: string }>) => {
-	return <Link href={href}>
+type Props = PropsWithChildren<{
+	title: string,
+	href: string,
+	external?: boolean,
+	description: string
+}>
+
+export const CardItem = ({ title, href, description, external = false }: Props) => {
+	const Wrapper = external ? (
+		({ children }: { children: ReactNode }) => <Anchor href={href} target="_blank">{children}</Anchor>
+	) : Link;
+	return <Wrapper href={href}>
 		<Card sx={{
 			cursor: "pointer",
 			padding: 20,
@@ -16,5 +26,5 @@ export const CardItem = ({ title, href, description }: PropsWithChildren<{ title
 			<Divider sx={{ marginBottom: 10 }} />
 			<Text weight={300} size="sm">{description}</Text>
 		</Card>
-	</Link>
+	</Wrapper>
 }
