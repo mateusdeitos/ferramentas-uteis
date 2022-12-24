@@ -1,10 +1,10 @@
 export declare module ConversaoJurosTypes {
-	type TPeriodoTaxa = "dia" | "mes" | "semestre" | "ano";
+	type TPeriodoTaxa = "daily" | "monthly" | "six-monthly" | "yearly";
 	type TConversaoTaxaJuros = {
-		dia: number;
-		mes: number;
-		semestre: number;
-		ano: number;
+		daily: number;
+		monthly: number;
+		"six-monthly": number;
+		yearly: number;
 	};
 
 	type TResponseConversaoTaxa = Record<TPeriodoTaxa, number>;

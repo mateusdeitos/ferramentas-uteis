@@ -5,10 +5,10 @@ export const converterTaxaJuros = (
 	periodo: ConversaoJurosTypes.TPeriodoTaxa
 ): ConversaoJurosTypes.TResponseConversaoTaxa => {
 	return {
-		dia: 100 * ((1 + taxaJuros / 100) ** (getExpoenteConversaoTaxa(periodo, "dia")) - 1),
-		mes: 100 * ((1 + taxaJuros / 100) ** (getExpoenteConversaoTaxa(periodo, "mes")) - 1),
-		semestre: 100 * ((1 + taxaJuros / 100) ** (getExpoenteConversaoTaxa(periodo, "semestre")) - 1),
-		ano: 100 * ((1 + taxaJuros / 100) ** (getExpoenteConversaoTaxa(periodo, "ano")) - 1),
+		daily: 100 * ((1 + taxaJuros / 100) ** (getExpoenteConversaoTaxa(periodo, "daily")) - 1),
+		monthly: 100 * ((1 + taxaJuros / 100) ** (getExpoenteConversaoTaxa(periodo, "monthly")) - 1),
+		"six-monthly": 100 * ((1 + taxaJuros / 100) ** (getExpoenteConversaoTaxa(periodo, "six-monthly")) - 1),
+		yearly: 100 * ((1 + taxaJuros / 100) ** (getExpoenteConversaoTaxa(periodo, "yearly")) - 1),
 	}
 }
 
@@ -17,29 +17,29 @@ const getExpoenteConversaoTaxa = (
 	periodoDesejado: ConversaoJurosTypes.TPeriodoTaxa
 ) => {
 	const mapExpoentes: Record<ConversaoJurosTypes.TPeriodoTaxa, ConversaoJurosTypes.TResponseConversaoTaxa> = {
-		dia: {
-			dia: 1,
-			mes: 30,
-			ano: 365,
-			semestre: 180,
+		daily: {
+			daily: 1,
+			monthly: 30,
+			yearly: 365,
+			"six-monthly": 180,
 		},
-		mes: {
-			dia: 1 / 30,
-			mes: 1,
-			semestre: 6,
-			ano: 12,
+		monthly: {
+			daily: 1 / 30,
+			monthly: 1,
+			"six-monthly": 6,
+			yearly: 12,
 		},
-		semestre: {
-			dia: 1 / 180,
-			mes: 1 / 6,
-			semestre: 1,
-			ano: 2,
+		"six-monthly": {
+			daily: 1 / 180,
+			monthly: 1 / 6,
+			"six-monthly": 1,
+			yearly: 2,
 		},
-		ano: {
-			dia: 1 / 365,
-			mes: 1 / 12,
-			semestre: 1 / 2,
-			ano: 1,
+		yearly: {
+			daily: 1 / 365,
+			monthly: 1 / 12,
+			"six-monthly": 1 / 2,
+			yearly: 1,
 		}
 	}
 

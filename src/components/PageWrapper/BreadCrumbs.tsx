@@ -35,7 +35,9 @@ export const BreadCrumbs = ({ title = "" }) => {
 			};
 		}, {});
 
-		const currentPath: Array<{ title: string; href: string; }> = pagePath.split("/")
+		const paths = pagePath.split("/");
+
+		const currentPath: Array<{ title: string; href: string; }> = [paths.at(0), paths.at(-1)]
 			.map(path => {
 				if (!path)
 					return "";

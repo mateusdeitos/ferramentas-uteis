@@ -1,10 +1,9 @@
-import { Button, CopyButton, Divider, Drawer, Group, JsonInput, Space, Switch, Tooltip } from "@mantine/core";
+import { Button, Divider, Group, JsonInput, Space, Switch, TextInput } from "@mantine/core";
 import { useLocalStorage } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
-import { Prism } from "@mantine/prism";
-import { useState } from "react";
-import { JsonObject, JsonParserTypes } from "../../services/json-parser";
+import { JsonObject } from "../../services/json-parser";
 import { TypescriptInterfaceOrType, TypescriptParsingOptions } from "../../services/typescript-json-parser";
+import { DrawerResultConversion, useOpenDrawer } from "../DrawerResultConversion";
 
 type TForm = {
 	json: string
@@ -48,8 +47,23 @@ export const JSONToTypescript = () => {
 		}
 	}
 
+	const handleOpenResult = () => {
+		const parsed = parseJson(formValues.json, formValues);
+		if (!parsed) {
+			showNotification({
+				title: "Erro",
+				message: "Não foi possível converter o JSON, verifique se o json é válido",
+			});
+
+			return;
+		}
+
+		const values = Array.isArray(parsed) ? parsed.map(i => i.serialize()) : [parsed.serialize()];
+		open(values);
+	}
+
 	return <>
-		<DrawerResult {...drawerProps} />
+		<DrawerResultConversion {...drawerProps} />
 		<JsonInput
 			label="JSON"
 			description="Insert a valid JSON		"
@@ -59,6 +73,18 @@ export const JSONToTypescript = () => {
 			autosize
 			value={formValues.json}
 			onChange={onChangeJsonInput}
+		/>
+
+		<Space h="md" />
+		<Divider />
+		<Space h="md" />
+
+		<TextInput
+			label="Root name"
+			description="The name of the root interface/type"
+			autoComplete='off'
+			value={formValues.rootObjectName}
+			onChange={({ target: { value: rootObjectName } }) => setFormValues({ ...formValues, rootObjectName })}
 		/>
 
 		<Switch
@@ -90,10 +116,7 @@ export const JSONToTypescript = () => {
 		<Group>
 			<Button
 				disabled={!formValues.json}
-				onClick={() => open(
-					formValues.json,
-					formValues
-				)}>
+				onClick={handleOpenResult}>
 				Converter
 			</Button>
 			<Button
@@ -106,69 +129,6 @@ export const JSONToTypescript = () => {
 	</>
 }
 
-interface IDrawerResultProps {
-	parsed?: TypescriptInterfaceOrType | TypescriptInterfaceOrType[];
-	onClose: () => void;
-}
-
-const DrawerResult = ({ parsed, onClose }: IDrawerResultProps) => {
-	return <Drawer
-		padding="xl"
-		position="right"
-		size={900}
-		title="Resultado"
-		opened={!!parsed}
-		onClose={onClose}
-		styles={{
-			drawer: {
-				height: "100%",
-				overflowY: "auto",
-			}
-		}}
-	>
-		{Array.isArray(parsed) ? (
-			<>
-				{parsed.map((item, index) => {
-					return <Prism sx={{ marginTop: 12 }} key={index} language="typescript">{item?.serialize?.() ?? ""}</Prism>
-				})}
-				<Space h="md" />
-				<CopyButton timeout={2000} value={parsed.map(item => item.serialize()).join("\n\n")}>{({ copied, copy }) => {
-					return <Tooltip label={copied ? 'Copied' : 'Copy All'} withArrow position="top">
-						<Button color={copied ? "teal" : "blue"} onClick={copy}>
-							{copied ? "Copied" : "Copy all"}
-						</Button>
-					</Tooltip>
-				}}</CopyButton>
-			</>
-		) : (
-			<Prism language="typescript">{parsed?.serialize?.() ?? ""}</Prism>
-		)}
-	</Drawer>
-}
-
-const useOpenDrawer = () => {
-	const [drawerProps, setDrawerProps] = useState<IDrawerResultProps>({
-		parsed: undefined,
-		onClose: () => setDrawerProps(v => ({ ...v, parsed: undefined })),
-	});
-
-	const open = (json: string, options: TForm) => {
-		const parsed = parseJson(json, options);
-		if (!parsed) {
-			showNotification({
-				title: "Erro",
-				message: "Não foi possível converter o JSON, verifique se o json é válido",
-			});
-
-			return;
-		}
-
-		setDrawerProps(v => ({ ...v, parsed }));
-
-		return close;
-	}
-	return [open, drawerProps] as const
-}
 
 const parseJson = (json: string, options: TForm) => {
 	try {

@@ -191,7 +191,7 @@ const DrawerResult = ({ parsed, onClose }: IDrawerResultProps) => {
 		padding="xl"
 		position="right"
 		size={900}
-		title="Resultado"
+		title="Result"
 		opened={!!parsed}
 		onClose={onClose}
 		styles={{

@@ -46,7 +46,7 @@ export const JurosForm: React.FC = () => {
 
 		setResult({
 			montanteFinal: {
-				descricao: "Montante final",
+				descricao: "Final amount",
 				valor: numeroBr(montanteFinalCalculado),
 			},
 		});
@@ -58,10 +58,10 @@ export const JurosForm: React.FC = () => {
 		setResult({
 			taxaJuros: {
 				descricao: "Interest rate",
-				valor: numeroBr(taxaJurosCalculada * 100) + "%" + values.tipoPeriodo,
+				valor: numeroBr(taxaJurosCalculada * 100) + "% " + values.tipoPeriodo,
 			},
 			rendimento: {
-				descricao: `$ ${numeroBr(values.valorInicial)} at a interest rate of ${numeroBr(taxaJurosCalculada * 100)}% for ${values.periodo} ${pluralPeriodo}`,
+				descricao: `$ ${numeroBr(values.valorInicial)} at a interest rate of ${numeroBr(taxaJurosCalculada * 100)}% (${values.tipoPeriodo}) for ${values.periodo} ${pluralPeriodo}`,
 				valor: "$ " + numeroBr(values.montanteFinal)
 			}
 		});
@@ -105,7 +105,7 @@ export const JurosForm: React.FC = () => {
 		{modoCalculo === 'taxaJuros' && <TaxaJurosForm />}
 
 		<CalculateButton withHotkey onClick={modoCalculo === 'montanteFinal' ? handleCalculo : handleCalculoTaxaJuros}>
-			Calcular
+			Evaluate
 		</CalculateButton>
 		<Space h="md" />
 

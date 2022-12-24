@@ -32,7 +32,10 @@ export const ValorInputComponent: React.FC<Props> = ({ name = "numberInput", rul
 				decimalSeparator=","
 				error={error?.message}
 				ref={ref}
-				onChange={(value) => onChange(value)}
+				onChange={(value) => {
+					onChange(value);
+					props?.onChange?.(value);
+				}}
 			/>
 		}}
 	/>

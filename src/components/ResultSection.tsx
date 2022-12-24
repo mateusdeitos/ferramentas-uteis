@@ -13,7 +13,7 @@ interface ResultSectionProps {
 	title?: string;
 }
 
-export const ResultSection: React.FC<ResultSectionProps> = ({ title = "Resultado", result, children }) => {
+export const ResultSection: React.FC<ResultSectionProps> = ({ title = "Result", result, children }) => {
 	return (
 		<Card>
 			<Card.Section sx={{ padding: "1rem 1rem 0 1rem" }}>

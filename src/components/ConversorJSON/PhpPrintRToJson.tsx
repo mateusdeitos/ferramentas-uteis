@@ -15,7 +15,64 @@ type ConversionOptions = {
 }
 
 export const PhpPrintRToJson = () => {
-	const form = useForm<TForm>({ defaultValues: { convertNumbers: true, printR: "" } })
+	const form = useForm<TForm>({
+		defaultValues: {
+			convertNumbers: true, printR: `Array
+	(
+		[id] => 1
+		[username] => admin
+		[configuration] => stdClass Object
+			(
+				[allow] => 1
+			)
+	
+		[roles] => Array
+			(
+				[0] => Array
+					(
+						[id] => 1
+						[name] => admin
+					)
+	
+				[1] => Array
+					(
+						[id] => 2
+						[name] => user
+					)
+	
+				[2] => Array
+					(
+						[id] => 3
+						[name] => guest
+					)
+	
+			)
+	
+		[permission] => Array
+			(
+				[0] => Array
+					(
+						[id] => 1
+						[name] => read
+					)
+	
+				[1] => Array
+					(
+						[id] => 2
+						[name] => write
+					)
+	
+				[2] => Array
+					(
+						[id] => 3
+						[name] => delete
+					)
+	
+			)
+	
+		[active] => 1
+	)` }
+	})
 	const [drawerProps, openDrawer] = useState<Omit<IDrawerResultProps, "onClose">>({
 		jsonString: "",
 	})
@@ -27,7 +84,7 @@ export const PhpPrintRToJson = () => {
 
 		if (!json) {
 			showNotification({
-				message: "Não foi possível converter o print_r",
+				message: "Couldn't convert the input",
 				color: "red",
 
 			});
@@ -49,7 +106,7 @@ export const PhpPrintRToJson = () => {
 			render={({ field }) => <Textarea
 				{...field}
 				label="Print_r"
-				description="Insira o retorno de um 'print_r' válido"
+				description="Insert the output of a valid 'print_r'"
 				minRows={10}
 				maxRows={15}
 				autosize
@@ -57,14 +114,14 @@ export const PhpPrintRToJson = () => {
 		/>
 
 		<Switch
-			label="Converter números"
+			label="Number conversion"
 			size="xs"
-			description="Converte strings numéricas para int ou float"
+			description="Parse numeric strings to int or float"
 			checked={form.watch("convertNumbers")}
 			{...form.register("convertNumbers")}
 		/>
 
-		<CalculateButton disabled={!printR} onClick={form.handleSubmit(handleConverter)}>Converter</CalculateButton>
+		<CalculateButton disabled={!printR} onClick={form.handleSubmit(handleConverter)}>Convert</CalculateButton>
 	</>
 }
 
@@ -78,7 +135,7 @@ const DrawerResult = ({ jsonString, onClose }: IDrawerResultProps) => {
 		padding="xl"
 		position="right"
 		size={900}
-		title="Resultado"
+		title="Result"
 		opened={!!jsonString}
 		onClose={onClose}
 		styles={{
@@ -190,62 +247,3 @@ function convertPhpPrintROutputToJSON(phpPrintROutput: string, options: Conversi
 
 	return json;
 }
-
-/**
- * "Array
-(
-	[id] => 1
-	[username] => admin
-	[configuration] => stdClass Object
-		(
-			[allow] => 1
-		)
-
-	[roles] => Array
-		(
-			[0] => Array
-				(
-					[id] => 1
-					[name] => admin
-				)
-
-			[1] => Array
-				(
-					[id] => 2
-					[name] => user
-				)
-
-			[2] => Array
-				(
-					[id] => 3
-					[name] => guest
-				)
-
-		)
-
-	[permission] => Array
-		(
-			[0] => Array
-				(
-					[id] => 1
-					[name] => read
-				)
-
-			[1] => Array
-				(
-					[id] => 2
-					[name] => write
-				)
-
-			[2] => Array
-				(
-					[id] => 3
-					[name] => delete
-				)
-
-		)
-
-	[active] => 1
-)
-"
- */

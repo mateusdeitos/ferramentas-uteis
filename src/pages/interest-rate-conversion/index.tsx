@@ -10,20 +10,20 @@ type FormData = {
 }
 
 const periodoOptions: { periodo: ConversaoJurosTypes.TPeriodoTaxa, label: string, symbol: string }[] = [
-	{ periodo: 'dia', label: 'Diário', symbol: 'ao dia' },
-	{ periodo: 'mes', label: 'Mensal', symbol: "ao mês" },
-	{ periodo: 'semestre', label: 'Semestral', symbol: "ao semestre" },
-	{ periodo: 'ano', label: 'Anual', symbol: "ao ano" },
+	{ periodo: 'daily', label: 'Daily', symbol: 'daily' },
+	{ periodo: 'monthly', label: 'Monthly', symbol: "monthly" },
+	{ periodo: 'six-monthly', label: 'Six Monthly', symbol: "six monthly" },
+	{ periodo: 'yearly', label: 'Yearly', symbol: "yearly" },
 ]
 
 export default function ConversaoJuros() {
 	const form = useForm<FormData>({
 		defaultValues: {
 			juros: {
-				dia: 0,
-				mes: 0,
-				ano: 0,
-				semestre: 0,
+				daily: 0,
+				monthly: 0,
+				yearly: 0,
+				"six-monthly": 0,
 			}
 		}
 	});
@@ -41,15 +41,15 @@ export default function ConversaoJuros() {
 
 	}
 
-	return <PageWrapper title="Conversão de taxa de juros equivalente">
+	return <PageWrapper title="Interest rate conversion">
 		<FormProvider {...form}>
 			{periodoOptions.map(({ periodo, label }) => (
 				<Group key={periodo} sx={{ marginBottom: 16 }}>
 					<ValorInputComponent
 						name={`juros.${periodo}`}
-						label={`Taxa de juros ${label} (%)`}
+						label={`Interest rate ${label} (%)`}
 						step={0.25}
-						onBlur={() => updateValues(periodo)}
+						onChange={() => updateValues(periodo)}
 						onKeyPress={(e) => {
 							if (e.key === 'Enter') {
 								updateValues(periodo);
