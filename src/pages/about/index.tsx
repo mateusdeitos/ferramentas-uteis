@@ -31,10 +31,10 @@ export default function About() {
 					)}
 
 					<Divider w="100%" />
-					{!!profile.name && <Info label="Name" value={profile.name} />}
+					{!!profile?.name && <Info label="Name" value={profile.name} />}
 					<Divider w="100%" />
 					<InfoGroup>
-						{!!profile.html_url && (
+						{!!profile?.html_url && (
 							<InfoSocialMedia
 								Icon={<ThemeIcon size="md" color="dark"><IconBrandGithub /></ThemeIcon>}
 								label="Github"
@@ -49,15 +49,15 @@ export default function About() {
 					</InfoGroup>
 					<Divider w="100%" />
 					<InfoGroup>
-						{!!profile.company && <Info label="Company" value={profile.company} />}
-						{!!profile.location && <Info label="Location" value={profile.location} />}
+						{!!profile?.company && <Info label="Company" value={profile.company} />}
+						{!!profile?.location && <Info label="Location" value={profile.location} />}
 					</InfoGroup>
 					<Divider w="100%" />
-					{!!profile.bio && <Info label="Bio" value={profile.bio} />}
+					{!!profile?.bio && <Info label="Bio" value={profile.bio} />}
 					<Divider w="100%" />
 					<InfoGroup>
-						{!!profile.following && <Info label="Following" value={profile.following} />}
-						{!!profile.followers && <Info label="Followers" value={profile.followers} />}
+						{!!profile?.following && <Info label="Following" value={profile.following} />}
+						{!!profile?.followers && <Info label="Followers" value={profile.followers} />}
 					</InfoGroup>
 				</>
 			)}
