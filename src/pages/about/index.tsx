@@ -86,6 +86,13 @@ export default function About() {
 							description="Stravando is a web application that allows you to see compare your Strava milestones with known distances in order to keep your motivation in your training."
 						/>
 					</InfoGroup>
+					<InfoGroup>
+						<InfoProject
+							name="SpaceX Api Explorer"
+							url="https://spacex-frontend-mateusdeitos.vercel.app/"
+							description="A web app build with NextJS and NestJS that allows you to explore SpaceX API and see some of the information about the their rocket launches, crew details, next missions and past missions."
+						/>
+					</InfoGroup>
 				</>
 			)}
 		</Flex>
