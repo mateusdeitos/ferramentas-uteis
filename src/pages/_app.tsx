@@ -1,5 +1,6 @@
 import { AppProps } from 'next/app';
 import Head from 'next/head';
+import { Analytics } from "@vercel/analytics/react"
 import { MantineProvider } from '@mantine/core';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
@@ -55,6 +56,7 @@ export default function App(props: AppProps) {
 					}}
 				>
 					<Component {...pageProps} />
+					<Analytics />
 				</MantineProvider>
 				<ReactQueryDevtools />
 			</QueryClientProvider>
