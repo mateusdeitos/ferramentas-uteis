@@ -88,6 +88,13 @@ export default function About() {
 					</InfoGroup>
 					<InfoGroup>
 						<InfoProject
+							name="Planning Poker"
+							url="https://planning-poker.mateusdeitos.dev"
+							description="Planning Poker App is an web app built using NextJS, Chakra-UI and uses Firebase's realtime database to handle the realtime interactions. In this app you an create rooms and invite colleagues to the room to assign story points to a task."
+						/>
+					</InfoGroup>
+					<InfoGroup>
+						<InfoProject
 							name="SpaceX Api Explorer"
 							url="https://spacex-frontend-mateusdeitos.vercel.app/"
 							description="A web app build with NextJS and NestJS that allows you to explore SpaceX API and see some of the information about the their rocket launches, crew details, next missions and past missions."
