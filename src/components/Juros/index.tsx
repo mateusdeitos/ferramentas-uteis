@@ -1,13 +1,13 @@
-import { Divider, Group, Radio, Space, Text } from '@mantine/core';
+import { Divider, Group, Radio, Space, Text } from "@mantine/core";
 import React, { useEffect, useState } from "react";
-import { FormProvider, useForm } from 'react-hook-form';
+import { FormProvider, useForm } from "react-hook-form";
 import { useBreakpoint } from "../../hooks/useBreakpoint";
-import { useInputSize } from '../../hooks/useInputSize';
-import { converterTaxaJuros } from '../../services/conversao-juros';
+import { useInputSize } from "../../hooks/useInputSize";
+import { converterTaxaJuros } from "../../services/conversao-juros";
 import { calcularMontanteFinal, calcularTaxaJuros } from "../../services/juros";
 import { numeroBr } from "../../utils/formatters/numberFormat";
-import { CalculateButton } from '../CalculateButton';
-import { IResult, ResultSection } from '../ResultSection';
+import { CalculateButton } from "../CalculateButton";
+import { IResult, ResultSection } from "../ResultSection";
 import { MontanteFinalForm } from "./MontanteFinalForm";
 import { TaxaJurosForm } from "./TaxaJurosForm";
 
@@ -23,7 +23,7 @@ export interface IJurosForm {
 	parcelasRestantes: number;
 }
 
-export const JurosForm: React.FC = () => {
+export const JurosForm = () => {
 	const { isMobile } = useBreakpoint();
 	const [result, setResult] = useState<IResult | null>(null);
 	const size = useInputSize();
@@ -61,11 +61,15 @@ export const JurosForm: React.FC = () => {
 				valor: numeroBr(taxaJurosCalculada * 100) + "% " + values.tipoPeriodo,
 			},
 			rendimento: {
-				descricao: `$ ${numeroBr(values.valorInicial)} at a interest rate of ${numeroBr(taxaJurosCalculada * 100)}% (${values.tipoPeriodo}) for ${values.periodo} ${pluralPeriodo}`,
-				valor: "$ " + numeroBr(values.montanteFinal)
-			}
+				descricao: `$ ${numeroBr(
+					values.valorInicial
+				)} at a interest rate of ${numeroBr(taxaJurosCalculada * 100)}% (${
+					values.tipoPeriodo
+				}) for ${values.periodo} ${pluralPeriodo}`,
+				valor: "$ " + numeroBr(values.montanteFinal),
+			},
 		});
-	})
+	});
 
 	useEffect(() => {
 		if (!isMobile) {
@@ -77,43 +81,52 @@ export const JurosForm: React.FC = () => {
 
 	useEffect(() => {
 		if (!!taxaJuros) {
-			const convertido = converterTaxaJuros(Number(taxaJuros), tipoPeriodoSelecionado == 'yearly' ? 'yearly' : 'monthly');
+			const convertido = converterTaxaJuros(
+				Number(taxaJuros),
+				tipoPeriodoSelecionado == "yearly" ? "yearly" : "monthly"
+			);
 			setValue("taxaJuros", convertido[tipoPeriodoSelecionado]);
 		}
-	}, [tipoPeriodoSelecionado])
+	}, [tipoPeriodoSelecionado]);
 
-	return <FormProvider {...form}>
-		<Text size="xl">Interest rate calculator</Text>
-		<Divider sx={{ marginBottom: "1rem" }} />
-		<Group>
-			<Radio.Group
-				label="What do you want to calculate"
-				orientation="horizontal"
-				size={size}
-				value={form.watch("modoCalculo")}
-				onChange={(value) => form.setValue("modoCalculo", value as IJurosForm["modoCalculo"])}
+	return (
+		<FormProvider {...form}>
+			<Text size="xl">Interest rate calculator</Text>
+			<Divider sx={{ marginBottom: "1rem" }} />
+			<Group>
+				<Radio.Group
+					label="What do you want to calculate"
+					orientation="horizontal"
+					size={size}
+					value={form.watch("modoCalculo")}
+					onChange={(value) =>
+						form.setValue("modoCalculo", value as IJurosForm["modoCalculo"])
+					}
+				>
+					<Radio value="taxaJuros" label="Interest rate" />
+					<Radio value="montanteFinal" label="Final amount" />
+				</Radio.Group>
+			</Group>
+			<Space h="md" />
+			<Divider />
+			<Space h="md" />
+
+			{modoCalculo === "montanteFinal" && <MontanteFinalForm />}
+			{modoCalculo === "taxaJuros" && <TaxaJurosForm />}
+
+			<CalculateButton
+				withHotkey
+				onClick={
+					modoCalculo === "montanteFinal"
+						? handleCalculo
+						: handleCalculoTaxaJuros
+				}
 			>
-				<Radio value="taxaJuros" label="Interest rate" />
-				<Radio value="montanteFinal" label="Final amount" />
-			</Radio.Group>
-		</Group>
-		<Space h="md" />
-		<Divider />
-		<Space h="md" />
+				Evaluate
+			</CalculateButton>
+			<Space h="md" />
 
-		{modoCalculo === 'montanteFinal' && <MontanteFinalForm />}
-		{modoCalculo === 'taxaJuros' && <TaxaJurosForm />}
-
-		<CalculateButton withHotkey onClick={modoCalculo === 'montanteFinal' ? handleCalculo : handleCalculoTaxaJuros}>
-			Evaluate
-		</CalculateButton>
-		<Space h="md" />
-
-		{
-			!!result && (
-				<ResultSection result={result} />
-			)
-		}
-	</FormProvider >
-}
-
+			{!!result && <ResultSection result={result} />}
+		</FormProvider>
+	);
+};
