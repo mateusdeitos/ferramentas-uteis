@@ -11,7 +11,7 @@ export const useCopyCSS = (formValues: TForm) => {
 				if (key === "amountOfItems") return;
 				if (key === "items") return;
 				if (key === "alignContent") return `align-content: ${value};`;
-				if (key === "gap") return `flex-gap: ${value}px;`;
+				if (key === "gap") return `gap: ${value}px;`;
 				if (key === "wrap") return `flex-wrap: ${value};`;
 				if (key === "justify") return `justify-content: ${value};`;
 				if (key === "align") return `align-items: ${value};`;

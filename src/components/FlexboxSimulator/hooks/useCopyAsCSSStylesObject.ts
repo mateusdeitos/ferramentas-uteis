@@ -11,7 +11,7 @@ export const useCopyAsCSSStylesObject = (formValues: TForm) => {
 				if (key === "amountOfItems") return;
 				if (key === "items") return;
 				if (key === "alignContent") return `alignContent: "${value}"`;
-				if (key === "gap") return `flexGap: ${value}`;
+				if (key === "gap") return `gap: ${value}`;
 				if (key === "wrap") return `flexWrap: "${value}"`;
 				if (key === "justify") return `justifyContent: "${value}"`;
 				if (key === "align") return `alignItems: "${value}"`;
