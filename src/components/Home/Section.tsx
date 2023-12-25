@@ -1,19 +1,27 @@
-import { Center, SimpleGrid, Divider, Text } from "@mantine/core"
-import { PropsWithChildren } from "react"
+import { Center, SimpleGrid, Text, useMantineTheme } from "@mantine/core";
+import { PropsWithChildren } from "react";
 
-export const Section = ({ children, title }: PropsWithChildren<{ title: string }>) => {
+export const Section = ({
+	children,
+	title,
+}: PropsWithChildren<{ title: string }>) => {
+	const theme = useMantineTheme();
 	return (
 		<>
-			<Center sx={{ margin: "20px 50px" }}>
-				<Text weight={800} size="xl">{title}</Text>
+			<Center mt={20}>
+				<Text fw={800} fz="xl" c={theme.colors.gray[4]}>
+					{title}
+				</Text>
 			</Center>
-			<SimpleGrid cols={3} spacing="md" sx={{ margin: "20px 0px" }} breakpoints={[
-				{ maxWidth: 980, cols: 3, spacing: 'md' },
-				{ maxWidth: 755, cols: 2, spacing: 'sm' },
-				{ maxWidth: 600, cols: 1, spacing: 'sm' },
-			]}>
+			<SimpleGrid
+				cols={{ base: 1, md: 2, lg: 3 }}
+				spacing={{ base: "md", md: "lg" }}
+				verticalSpacing={{ base: "md", md: "lg" }}
+				style={{ margin: "20px 0px", alignItems: "stretch" }}
+				maw={{ base: 960, md: 960, lg: 960 }}
+			>
 				{children}
 			</SimpleGrid>
 		</>
-	)
-}
+	);
+};

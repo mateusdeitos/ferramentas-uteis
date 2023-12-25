@@ -19,20 +19,20 @@ export const ResultSection = ({
 }: PropsWithChildren<ResultSectionProps>) => {
 	return (
 		<Card>
-			<Card.Section sx={{ padding: "1rem 1rem 0 1rem" }}>
-				<Text weight={500} size="xl">
+			<Card.Section style={{ padding: "1rem 1rem 0 1rem" }}>
+				<Text fw={500} size="xl">
 					{title}
 				</Text>
 				<Divider />
 				<Space h="md" />
 			</Card.Section>
 			<Card.Section>
-				<Flex direction="column" sx={{ padding: "0 1rem 0.5rem 1rem" }}>
+				<Flex direction="column" style={{ padding: "0 1rem 0.5rem 1rem" }}>
 					{result &&
 						Object.entries(result).map(([key, { descricao, valor }]) => {
 							return (
 								<Group key={key}>
-									<Text size="md" weight={300}>
+									<Text size="md" fw={300}>
 										{descricao}:
 									</Text>
 									<Text size="sm">{valor}</Text>

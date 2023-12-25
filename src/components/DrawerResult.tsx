@@ -1,12 +1,11 @@
 import { Drawer, Space, CopyButton, Tooltip, Button } from "@mantine/core";
-import { Prism } from "@mantine/prism";
-import { Language } from "prism-react-renderer";
+import { CodeHighlight } from "@mantine/code-highlight";
 import { useState } from "react";
 
 export interface IDrawerResultProps {
 	values: string[];
 	onClose: () => void;
-	language?: Language;
+	language?: string;
 }
 
 export const DrawerResult = ({
@@ -23,7 +22,7 @@ export const DrawerResult = ({
 			opened={!!values?.length}
 			onClose={onClose}
 			styles={{
-				drawer: {
+				root: {
 					height: "100%",
 					overflowY: "auto",
 				},
@@ -32,9 +31,12 @@ export const DrawerResult = ({
 			<>
 				{values.map((item, index) => {
 					return (
-						<Prism sx={{ marginTop: 12 }} key={index} language={language}>
-							{item ?? ""}
-						</Prism>
+						<CodeHighlight
+							style={{ marginTop: 12 }}
+							key={index}
+							language={language}
+							code={item}
+						/>
 					);
 				})}
 				<Space h="md" />

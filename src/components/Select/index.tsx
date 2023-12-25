@@ -13,7 +13,7 @@ export const SelectComponent = ({
 	const { isMobile } = useBreakpoint();
 	const size = useInputSize();
 
-	const sx: Sx = (theme) => ({
+	const style: Sx = (theme) => ({
 		width: isMobile ? "100%" : "25%",
 	});
 
@@ -26,7 +26,7 @@ export const SelectComponent = ({
 					<Select
 						{...props}
 						ref={ref}
-						sx={sx}
+						style={style}
 						size={size}
 						value={value}
 						onChange={(value) => onChange(value)}

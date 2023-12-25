@@ -92,7 +92,7 @@ export const JurosForm = () => {
 	return (
 		<FormProvider {...form}>
 			<Text size="xl">Interest rate calculator</Text>
-			<Divider sx={{ marginBottom: "1rem" }} />
+			<Divider style={{ marginBottom: "1rem" }} />
 			<Group>
 				<Radio.Group
 					label="What do you want to calculate"

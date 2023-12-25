@@ -1,0 +1,9 @@
+.cardItem {
+	cursor: pointer;
+	padding: 20;
+	transition: box-shadow 0.2s ease-in-out;
+}
+
+.cardItem:hover {
+	box-shadow: 0 0 0 2px #3b82f6;
+}

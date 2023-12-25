@@ -1,0 +1,8 @@
+.mantine-Anchor-root {
+	color: var(--mantine-color-bright);
+	transition: color 0.2s ease;
+}
+
+.mantine-Anchor-root:hover {
+	color: var(--mantine-color-blue-8);
+}

@@ -1,3 +1,4 @@
+"use-client";
 import { Button, Flex, FlexProps } from "@mantine/core";
 import { DrawerResult } from "../components/DrawerResult";
 import { Form } from "../components/FlexboxSimulator/Form";
